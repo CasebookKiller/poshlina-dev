@@ -1,9 +1,9 @@
 {
-  "name": "reactjs-template",
+  "name": "poshlina-dev",
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://telegram-mini-apps.github.io/reactjs-template",
+  "homepage": "https://casebookkiller.github.io/poshlina-dev",
   "scripts": {
     "deploy": "gh-pages -d dist",
     "dev": "vite",
@@ -32,6 +32,7 @@
     "@typescript-eslint/parser": "^7.8.0",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-react-swc": "^3.6.0",
+    "antd": "^5.21.2",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "gh-pages": "^6.1.1",
