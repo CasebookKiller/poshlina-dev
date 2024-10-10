@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       },
     } = this;
 
-    return 'error' in this.state
+    return 'Ошибка' in this.state
       ? typeof Fallback === 'function'
         ? <Fallback error={error} />
         : Fallback

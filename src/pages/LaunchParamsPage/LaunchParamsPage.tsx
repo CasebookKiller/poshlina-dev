@@ -5,6 +5,9 @@ import type { FC } from 'react';
 import { DisplayData } from '@/components/DisplayData/DisplayData.tsx';
 
 export const LaunchParamsPage: FC = () => {
+  console.log('LaunchParamsPage: ', window.location);
+  console.log('history:', history);
+
   const lp = useLaunchParams();
 
   return (

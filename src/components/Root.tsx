@@ -1,8 +1,8 @@
-import { SDKProvider, useLaunchParams } from '@telegram-apps/sdk-react';
+import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { type FC, useEffect, useMemo } from 'react';
 
-import { App } from '@/components/App.tsx';
+import App from '@/components/App';
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 
 const ErrorBoundaryError: FC<{ error: unknown }> = ({ error }) => (
@@ -19,6 +19,7 @@ const ErrorBoundaryError: FC<{ error: unknown }> = ({ error }) => (
     </blockquote>
   </div>
 );
+
 
 const Inner: FC = () => {
   console.log('Запуск приложения');
@@ -43,9 +44,7 @@ const Inner: FC = () => {
 
   return (
     <TonConnectUIProvider manifestUrl={manifestUrl}>
-      <SDKProvider acceptCustomStyles debug={debug}>
-        <App/>
-      </SDKProvider>
+      <App/>
     </TonConnectUIProvider>
   );
 };

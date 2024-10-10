@@ -10,8 +10,8 @@ if (import.meta.env.DEV) {
   try {
     // Если мы можем извлечь параметры запуска, это означает, что мы уже находимся в среде 
     // Telegram. Таким образом, нет необходимости имитировать её.
-    retrieveLaunchParams();
-
+    const lp = retrieveLaunchParams();
+    console.log('Параметры запуска извлечены', parseInitData(lp));
     // Ранее мы могли имитировать окружающую среду. В случае, если мы это сделали, мы должны сделать это снова.
     // Потому что страница может быть перезагружена, и мы должны снова использовать имитацию, потому что имитация также
     // позволяет изменять объект window.
@@ -56,7 +56,7 @@ if (import.meta.env.DEV) {
       },
       initData: parseInitData(initDataRaw),
       initDataRaw,
-      version: '7.2',
+      version: '7.10',
       platform: 'tdesktop',
     });
     sessionStorage.setItem('____mocked', '1');
