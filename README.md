@@ -1,4 +1,6 @@
 # Шаблон Telegram Mini Apps на React
+![Static Badge](https://img.shields.io/badge/%D0%B3%D0%BE%D1%81%D0%BF%D0%BE%D1%88%D0%BB%D0%B8%D0%BD%D0%B0-%D0%B2%D0%B5%D1%80._0.0.1-orange?logo=telegram&logoColor=white&label=%D0%B3%D0%BE%D1%81%D0%BF%D0%BE%D1%88%D0%BB%D0%B8%D0%BD%D0%B0&color=orange&link=https%3A%2F%2Fgithub.com%2Fcasebookkiller%2Fposhlina-dev)
+![Static Badge](https://img.shields.io/badge/react-%D0%B2%D0%B5%D1%80._18.2.0-blue?logo=react&logoColor=white&label=react&color=%230277bd)
 
 Этот шаблон демонстрирует, как разработчики могут реализовать одностраничное приложение на платформе Telegram Mini Apps, используя следующие технологии и библиотеки:
 
