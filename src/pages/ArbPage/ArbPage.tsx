@@ -4,6 +4,8 @@ import { FC, useState } from "react";
 
 import { Calc } from "@/components/Calc/Calc";
 
+import './ArbPage.css'
+
 export const ArbPage: FC = () => {
   const [sum] = useState();
   const [posh] = useState();

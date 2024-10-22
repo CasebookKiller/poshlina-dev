@@ -121,7 +121,7 @@ export const App: FC = () => {
 
   viewport.mount();
   viewport.bindCssVars();
-
+  
   backButton.mount();
   console.log('miniApp', miniApp);
   
@@ -148,6 +148,7 @@ export const App: FC = () => {
     <AppRoot
       appearance={miniApp.isDark() ? 'dark' : 'light'}
       platform={['macos', 'ios'].includes(lp.platform) ? 'ios' : 'base'}
+
     >
       <Router>
         <MainButtonManipulator/>
