@@ -1,0 +1,107 @@
+
+/* hide vertical scroll bar */
+body { 
+  overflow-y: hidden;
+}
+
+/* ant design */
+.ant-switch {
+  border: 0px solid var(--tg-theme-hint-color);
+  border-radius: 16px
+}
+
+.ant-switch.ant-switch-checked {
+  border: none;
+  border-radius: 16px;
+  visibility: visible;
+  transition: opacity 0.15s linear;
+}
+
+.ant-switch.ant-switch-checked:hover {
+  background: var(--tg-theme-hint-color);
+}
+
+.ant-switch::before{
+  background: var(--tg-theme-secondary-bg-color);
+  border: 3px solid var(--tg-theme-hint-color);
+  border-radius: 16px;
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  visibility: visible;
+  transition: opacity 0.05s linear;
+  z-index: 1050;
+}
+
+.ant-switch.ant-switch-checked::before{
+  visibility: hidden;
+  transition: opacity 0.05s linear;
+}
+
+.ant-switch.ant-switch-checked > div.ant-switch-handle{
+  visibility: visible;
+  transition: opacity 0.05s linear;
+}
+
+.ant-switch > div.ant-switch-handle{
+  visibility: hidden;
+  transition: opacity 0.05s linear;
+}
+
+.ant-switch.ant-switch-checked::after {
+  visibility: hidden;  
+  transition: opacity 0.05s linear;
+}
+
+.ant-switch::after{
+  background: var(--tg-theme-hint-color);
+  height: 16px;
+  margin-left: 8px;
+  width: 16px;
+  border-radius: 50%;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0px;
+  transform: translateY(-50%);
+  visibility: visible;
+  transition: opacity 0.55s linear;
+  z-index: 1050;
+}
+
+/* primereact */
+.p-inputnumber {
+  background-color: var(--tg-theme-bg-color);
+  border-radius: 16px;
+}
+
+.p-inputnumber:focus {
+  border-color: var(--tg-theme-accent-text-color);
+  border-width: 2px;
+}
+
+.p-inputtext {
+  font-family: var(--font-family);
+  font-feature-settings: var(--font-feature-settings, normal);
+  font-size: 1rem;
+  color: var(--tg-theme-text-color);/*rgba(255, 255, 255, 0.87);*/
+  background: var(--tg-theme-bg-color);
+  padding: 0.75rem 0.75rem;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 16px;
+  border-color: var(--tg-theme-secondary-bg-color);
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  outline-color: transparent;
+}
+
+.p-inputwrapper-focus {
+  border-width: 2px;
+  border-color: var(--tg-theme-accent-text-color);
+  border-style: solid;
+  height: 48px;
+}

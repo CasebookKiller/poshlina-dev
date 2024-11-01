@@ -59,6 +59,8 @@ function MainButtonManipulator() {
     textColor: themeParams.buttonTextColor() || '#ffffff',
     text: 'Поделиться расчетом'
   }
+  
+  if (!mainButton.isMounted()) mainButton.mount();
   mainButton.setParams(mainButtonParams);
   if (location.pathname === '/' || location.pathname === '/poshlina-dev/') mainButton.mount();
   console.log('Добавлена главная кнопка', mainButton);
@@ -67,10 +69,10 @@ function MainButtonManipulator() {
     console.log('location.pathname: ', location.pathname);
     if (location.pathname === '/' || location.pathname === '/poshlina-dev/') {
       mainButton.setParams({ text: 'Поделиться расчетом', isVisible: true, isEnabled: true });
-      //mainButton.mount();
+      mainButton.mount();
     } else {
       mainButton.setParams({ text: 'Перейдите на страницу с расчетом', isVisible: false, isEnabled: true });
-      //mainButton.mount();
+      mainButton.mount();
     }
     mainButton.onClick(() => {
       try {
@@ -115,10 +117,10 @@ export const App: FC = () => {
   const lp = useLaunchParams();
   
   miniApp.mount();
-  miniApp.bindCssVars();
+  //miniApp.bindCssVars();
 
   themeParams.mount();
-  //themeParams.bindCssVars();
+  if (!themeParams.isCssVarsBound()) themeParams.bindCssVars();
   console.log('ThemeParams', themeParams);
 
   viewport.mount();
