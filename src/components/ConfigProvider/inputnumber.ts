@@ -1,57 +1,54 @@
-import {
-  accentTextColor,
-  fontFamily,
-  secondaryHintColor,
-} from "./variables";
+import { accentTextColor, backgroundColor, fontFamily, secondaryBgColor } from "./variables";
 
-export let tokenInputConfig = {
-  activeBg: accentTextColor, //
-  activeBorderColor: accentTextColor, //
+export let tokenInputNumberConfig = {
+  //// Component
+  activeBg: backgroundColor,
+  activeBorderColor: accentTextColor,
   activeShadow: 'red',
-
-  ////
   //addonBg
+  //controlWidth
   //errorActiveShadow
+  //filledHandleBg
+  //handleActiveBg: 'red',
+  //handleBg: 'red',
+  //handleBorderColor
+  //handleFontSize
+  handleHoverColor: accentTextColor,
+  //handleVisible
+  //handleWidth
   //hoverBg
-  hoverBorderColor: accentTextColor, //
+  hoverBorderColor: accentTextColor,
   //inputFontSize
   //inputFontSizeLG
   //inputFontSizeSM
   //paddingBlock
   //paddingBlockLG
   //paddingBlockSM
-  //paddingInline: 11,
+  //paddingInline
   //paddingInlineLG
   //paddingInlineSM
   //warningActiveShadow
-  lineHeight: 3,
 
-  //Global
+  //// Global
   //colorBgContainer
-  //colorBgComtainerDisabled
+  //colorBgContainerDisabled
   //colorBorder
   //colorError
   //colorErrorBg
   //colorErrorBgHover
-  //colorErrorHover
+  //colorErrorBorderHover
   //colorErrorText
   //colorFillSecondary
   //colorFillTertiary
-  //colorIcon
-  //colorIconHover
-  //colorPrimaryActive
-  //colorPrimaryHover
   //colorSplit
   //colorText
   //colorTextDescription
   //colorTextDisabled
-  colorTextPlaceholder: secondaryHintColor, // '',
-  //colorTextQuaternary
-  //colorTextTertiary
+  colorTextPlaceholder: secondaryBgColor,
   //colorWarning
   //colorWarningBg
   //colorWarningBgHover
-  //colorWarningHover
+  //colorWarningBorderHover
   //colorWarningText
   //borderRadius
   //borderRadiusLG
@@ -59,17 +56,15 @@ export let tokenInputConfig = {
   //controlHeight
   //controlHeightLG
   //controlHeightSM
-  fontFamily: fontFamily, // '',
+  fontFamily: fontFamily,
   //fontSize
-  //fontSizeIcon
-  //lineHeight
+  //fontSizeLG
+  lineHeight: 3, 
   //lineHeightLG
   //lineType
-  //lineWidth
+  lineWidth: 2,
   //motionDurationMid
   //motionDurationSlow
-  //paddingLG
   //paddingXS
   //paddingXXS
-
 }

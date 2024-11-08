@@ -1,4 +1,4 @@
-import { secondaryBgColor } from "./variables";
+import { outlineColor, secondaryBgColor } from "./variables";
 import './list.css';
 
 export let tokenListConfig = {
@@ -7,8 +7,8 @@ export let tokenListConfig = {
   //contentWidth
   //descriptionFontSize
   //emptyTextPadding
-  //footerBg
-  //headerBg
+  footerBg: secondaryBgColor,
+  headerBg: secondaryBgColor,
   itemPadding: '16px 24px',
   itemPaddingLG: '32px 0',
   itemPaddingSM: '16px 0',
@@ -18,7 +18,7 @@ export let tokenListConfig = {
   //// Global
   //colorBorder
   //colorPrimary
-  colorSplit: secondaryBgColor, //'rgba(5, 5, 5, 0.06)',
+  colorSplit: outlineColor, //'rgba(5, 5, 5, 0.06)',
   //colorText
   //colorTextDescription
   //colorTextDisabled

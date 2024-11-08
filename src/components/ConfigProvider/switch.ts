@@ -5,10 +5,10 @@ import { buttonColor } from "./variables";
 export let tokenSwitchConfig = {
   //// Component
   //handleBg: 'white',
-  handleShadow: '0 2px 4px 0 rgba(0, 35, 11, 0.2)',
-  handleSize: 24,
+  handleShadow: '0 2px 2px 0 rgba(0, 35, 11, 0.2)',
+  handleSize: 22,
   //handleSizeSM
-  //innerMaxMargin: 2,
+  innerMaxMargin: 2,
   //innerMaxMarginSM: 6,
   //innerMinMargin: 16,
   //innerMinMarginSM: 24,

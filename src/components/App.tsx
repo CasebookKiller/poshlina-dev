@@ -1,7 +1,7 @@
 import {
-  shareURL,
-  popup,
-  mainButton,
+//  shareURL,
+//  popup,
+//  mainButton,
   backButton,
   useLaunchParams,
   miniApp,
@@ -50,8 +50,8 @@ function BackButtonManipulator() {
   return null;
 }
 
+/*
 function MainButtonManipulator() {
-  
   const location = useLocation();
 
   let mainButtonParams = {
@@ -61,13 +61,15 @@ function MainButtonManipulator() {
   }
   
   if (!mainButton.isMounted()) mainButton.mount();
+  
   mainButton.setParams(mainButtonParams);
-  if (location.pathname === '/' || location.pathname === '/poshlina-dev/') mainButton.mount();
+  
+  if (location.pathname === '/sou' || location.pathname === '/arb') mainButton.mount();
   console.log('Добавлена главная кнопка', mainButton);
 
   useEffect(() => {
     console.log('location.pathname: ', location.pathname);
-    if (location.pathname === '/' || location.pathname === '/poshlina-dev/') {
+    if (location.pathname === '/sou' || location.pathname === '/arb') {
       mainButton.setParams({ text: 'Поделиться расчетом', isVisible: true, isEnabled: true });
       mainButton.mount();
     } else {
@@ -111,6 +113,7 @@ function MainButtonManipulator() {
   return null;
   
 }
+*/
 
 export const App: FC = () => {
   init();
@@ -123,31 +126,13 @@ export const App: FC = () => {
   if (!themeParams.isCssVarsBound()) themeParams.bindCssVars();
   console.log('ThemeParams', themeParams);
 
-  viewport.mount();
-  //viewport.bindCssVars();
+  if (!viewport.isMounted) viewport.mount();
   
   backButton.mount();
   console.log('miniApp', miniApp);
   
-  // Установка обработчика нажатия на главную кнопку
-  
-  
+  //console.log('popup: ', popup.isSupported());
 
-  /*
-  backButton.mount();
-  backButton.show();
-  backButton.onClick(() => {
-    try {
-      console.log('Нажата кнопка "Назад"');
-      window.history.back();
-      console.log('--- history ---',history);
-    } catch (error) {
-      console.error('Ошибка при нажатии кнопки "Назад":', error);
-    }
-    
-    
-  })*/
-  
   return (
     <AppRoot
       appearance={miniApp.isDark() ? 'dark' : 'light'}
@@ -155,7 +140,7 @@ export const App: FC = () => {
 
     >
       <Router>
-        <MainButtonManipulator/>
+        {/*<MainButtonManipulator/>*/}
         <BackButtonManipulator/>
         <Routes>
           {routes.map((route) => <Route key={route.path} {...route} />)}

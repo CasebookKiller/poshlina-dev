@@ -1,0 +1,25 @@
+
+/*.hoverable:hover {
+  background: #2a2a2a;
+}*/  
+
+@media (prefers-color-scheme: light) {
+
+
+}
+
+@media (prefers-color-scheme: dark) {
+
+  :where(.css-dev-only-do-not-override-1c9x9am).ant-list-split .ant-list-header {
+    border-block-end: 2px solid var(--outline);
+  }
+
+  :where(.css-dev-only-do-not-override-151m7wy).ant-btn-variant-solid:disabled, :where(.css-dev-only-do-not-override-151m7wy).ant-btn-variant-solid.ant-btn-disabled {
+    cursor: not-allowed;
+    border-color: #232e3c;
+    color: var(--tg-theme-secondary-bg-color);
+    background: rgba(0, 0, 0, 0.04);
+    box-shadow: none;
+}
+
+}

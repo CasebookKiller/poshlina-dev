@@ -1,54 +1,57 @@
-import { accentTextColor, backgroundColor, fontFamily, secondaryHintColor } from "./variables";
+import {
+  accentTextColor,
+  fontFamily,
+  secondaryBgColor,
+} from "./variables";
 
-export let tokenInputNumberConfig = {
-  //// Component
-  activeBg: backgroundColor,
-  activeBorderColor: accentTextColor,
+export let tokenInputConfig = {
+  activeBg: accentTextColor, //
+  activeBorderColor: accentTextColor, //
   activeShadow: 'red',
+
+  ////
   //addonBg
-  //controlWidth
   //errorActiveShadow
-  //filledHandleBg
-  //handleActiveBg: 'red',
-  //handleBg: 'red',
-  //handleBorderColor
-  //handleFontSize
-  handleHoverColor: accentTextColor,
-  //handleVisible
-  //handleWidth
   //hoverBg
-  hoverBorderColor: accentTextColor,
+  hoverBorderColor: accentTextColor, //
   //inputFontSize
   //inputFontSizeLG
   //inputFontSizeSM
   //paddingBlock
   //paddingBlockLG
   //paddingBlockSM
-  //paddingInline
+  //paddingInline: 11,
   //paddingInlineLG
   //paddingInlineSM
   //warningActiveShadow
+  lineHeight: 3,
 
-  //// Global
+  //Global
   //colorBgContainer
-  //colorBgContainerDisabled
+  //colorBgComtainerDisabled
   //colorBorder
   //colorError
   //colorErrorBg
   //colorErrorBgHover
-  //colorErrorBorderHover
+  //colorErrorHover
   //colorErrorText
   //colorFillSecondary
   //colorFillTertiary
+  //colorIcon
+  //colorIconHover
+  //colorPrimaryActive
+  //colorPrimaryHover
   //colorSplit
   //colorText
   //colorTextDescription
   //colorTextDisabled
-  colorTextPlaceholder: secondaryHintColor,
+  colorTextPlaceholder: secondaryBgColor, // '',
+  //colorTextQuaternary
+  //colorTextTertiary
   //colorWarning
   //colorWarningBg
   //colorWarningBgHover
-  //colorWarningBorderHover
+  //colorWarningHover
   //colorWarningText
   //borderRadius
   //borderRadiusLG
@@ -56,15 +59,17 @@ export let tokenInputNumberConfig = {
   //controlHeight
   //controlHeightLG
   //controlHeightSM
-  fontFamily: fontFamily,
+  fontFamily: fontFamily, // '',
   //fontSize
-  //fontSizeLG
-  lineHeight: 3, 
+  //fontSizeIcon
+  //lineHeight
   //lineHeightLG
   //lineType
-  lineWidth: 2,
+  //lineWidth
   //motionDurationMid
   //motionDurationSlow
+  //paddingLG
   //paddingXS
   //paddingXXS
+
 }
