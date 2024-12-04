@@ -1,23 +1,44 @@
-import { miniApp, themeParams } from "@telegram-apps/sdk";
+const TCLR = import.meta.env.VITE_TXT_COLOR;
+
+import { init, miniApp, themeParams } from "@telegram-apps/sdk";
+
+init();
 
 const MA = miniApp;
-const isDark = MA.isDark();
+console.log('%cminiApp: %o', `color: ${TCLR}`, MA);
+let isDark = false;
+
+if (MA.isSupported() && !MA.isMounted()) {
+  MA.mount();
+  isDark = MA.isDark();
+}
+
+console.log('Dark Mode: ', isDark);
+
 const TP = themeParams;
-TP.mount();
+
+try {
+  if (!TP.isMounted()) TP.mount();
+  if (!TP.isCssVarsBound) TP.bindCssVars();
+
+} catch (error) {
+  console.log('%cerror: %o', `color: ${TCLR}`, error);
+}
+
 /*
-    //--tgui--bg_color: var(--tg-theme-bg-color,#213035);
-    //--tgui--text_color: var(--tg-theme-text-color,#ffffff);
-    //--tgui--hint_color: var(--tg-theme-hint-color,#7b8d92);
-    //--tgui--link_color: var(--tg-theme-link-color,#63b7c4);
-    //--tgui--button_color: var(--tg-theme-button-color,#59bccd);
-    //--tgui--button_text_color: var(--tg-theme-button-text-color,#ffffff);
-    //--tgui--secondary_bg_color: var(--tg-theme-secondary-bg-color,#152023);
-    //--tgui--header_bg_color: var(--tg-theme-header-bg-color,#242f34);
-    //--tgui--accent_text_color: var(--tg-theme-accent-text-color,#69c2d0);
-    //--tgui--section_bg_color: var(--tg-theme-section-bg-color,#1d292e);
-    //--tgui--section_header_text_color: var(--tg-theme-section-header-text-color,#7acedc);
-    //--tgui--subtitle_text_color: var(--tg-theme-subtitle-text-color,#7b888a);
-    //--tgui--destructive_text_color: var(--tg-theme-destructive-text-color,#ee686f);
+  //--tgui--bg_color: var(--tg-theme-bg-color,#213035);
+  //--tgui--text_color: var(--tg-theme-text-color,#ffffff);
+  //--tgui--hint_color: var(--tg-theme-hint-color,#7b8d92);
+  //--tgui--link_color: var(--tg-theme-link-color,#63b7c4);
+  //--tgui--button_color: var(--tg-theme-button-color,#59bccd);
+  //--tgui--button_text_color: var(--tg-theme-button-text-color,#ffffff);
+  //--tgui--secondary_bg_color: var(--tg-theme-secondary-bg-color,#152023);
+  //--tgui--header_bg_color: var(--tg-theme-header-bg-color,#242f34);
+  //--tgui--accent_text_color: var(--tg-theme-accent-text-color,#69c2d0);
+  //--tgui--section_bg_color: var(--tg-theme-section-bg-color,#1d292e);
+  //--tgui--section_header_text_color: var(--tg-theme-section-header-text-color,#7acedc);
+  //--tgui--subtitle_text_color: var(--tg-theme-subtitle-text-color,#7b888a);
+  //--tgui--destructive_text_color: var(--tg-theme-destructive-text-color,#ee686f);
     --tgui--skeleton: hsla(0,0%,100%,.03);
     --tgui--divider: hsla(0,0%,100%,.05);
     --tgui--outline: hsla(0,0%,100%,.1);
@@ -35,25 +56,27 @@ TP.mount();
     --tgui--tertiary_code_highlight: #5ae536;
     --tgui--plain_background: hsla(0,0%,100%,.08);
     --tgui--plain_foreground: hsla(0,0%,100%,.95);
-
 */
-export const accentTextColor = isDark ? '#69c2d0': TP.accentTextColor();//
-export const destructiveColor = isDark ? '#ee686f': TP.destructiveTextColor();//
-export const backgroundColor = isDark ? '#213035': TP.backgroundColor();//
-export const secondaryBgColor = isDark ? '#232e3c': TP.secondaryBackgroundColor();//
-export const headerBgColor = isDark ? '#242f34': TP.headerBackgroundColor();//
-export const textColor = isDark ? '#ffffff': TP.textColor();//
-export const buttonColor = isDark ? '#59bccd': TP.buttonColor();//
-export const buttonTextColor = isDark ? '#ffffff': TP.buttonTextColor();//
-export const hintColor = isDark ? '#7b8d92': TP.hintColor();//
-export const subtitleTextColor = isDark ? '#7b888a': TP.subtitleTextColor();//
-export const linkColor = isDark ? '#63b7c4': TP.linkColor();//
-export const sectionHeaderTextColor = isDark ? '#7acedc': TP.sectionHeaderTextColor();//
-export const sectionBgColor = isDark ? '#1d292e': TP.sectionBackgroundColor();//
-export const sectionSeparatorColor = isDark ? '#0d1316': TP.sectionSeparatorColor();
-export const buttonBarBgColor = isDark ? '#152023': TP.bottomBarBgColor();
 
-export const outlineColor = isDark ? '#ffffff1a': '#ffffff1a';
+export const accentTextColor = !isDark ? '#69c2d0': TP.accentTextColor();//
+console.log('%caccentTextColor: %o', 'color: ' + accentTextColor, accentTextColor);
+console.log('%caccentTextColor: %o', 'color: ' + TP.accentTextColor(), TP.accentTextColor());
+export const destructiveColor = !isDark ? '#ee686f': TP.destructiveTextColor();//
+export const backgroundColor = !isDark ? '#213035': TP.backgroundColor();//
+export const secondaryBgColor = !isDark ? '#232e3c': TP.secondaryBackgroundColor();//
+export const headerBgColor = !isDark ? '#242f34': TP.headerBackgroundColor();//
+export const textColor = !isDark ? '#ffffff': TP.textColor();//
+export const buttonColor = !isDark ? '#59bccd': TP.buttonColor();//
+export const buttonTextColor = !isDark ? '#ffffff': TP.buttonTextColor();//
+export const hintColor = !isDark ? '#7b8d92': TP.hintColor();//
+export const subtitleTextColor = !isDark ? '#7b888a': TP.subtitleTextColor();//
+export const linkColor = !isDark ? '#63b7c4': TP.linkColor();//
+export const sectionHeaderTextColor = !isDark ? '#7acedc': TP.sectionHeaderTextColor();//
+export const sectionBgColor = !isDark ? '#1d292e': TP.sectionBackgroundColor();//
+export const sectionSeparatorColor = !isDark ? '#0d1316': TP.sectionSeparatorColor();
+export const buttonBarBgColor = !isDark ? '#152023': TP.bottomBarBgColor();
+
+export const outlineColor = !isDark ? '#ffffff1a': '#ffffff1a';
 
 export const fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif';
 export const fontWeightAccent3 = 400;

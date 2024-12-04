@@ -2,23 +2,25 @@ import { FC, useState } from "react";
 
 import { Calc } from "@/components/Calc/Calc";
 
-import './SouPage.css'
+import './StartUrlPage.css'
 import { App } from "antd";
 import { themeParams, /*useLaunchParams*/ } from "@telegram-apps/sdk-react";
 import { calcPosh, Code, getCode } from "@/components/Calc/functions";
 
-const txtColor = import.meta.env.VITE_TXT_COLOR;
 
-export interface SouPageProps {
+const txtColor = import.meta.env.VITE_TXT_COLOR;
+const txtColorRed = import.meta.env.VITE_TXT_COLOR_RED;
+
+export interface StartUrlPageProps {
   startParam?: string;
 }
 
-export const SouPage: FC<SouPageProps> = (props) => {
+export const StartUrlPage: FC<StartUrlPageProps> = (props) => {
   //const LP = useLaunchParams();
   //const SP = LP.initData?.startParam;
 
   //let startParam = SP || '';
-  console.log('%cstartParam: %o', `color: ${txtColor}`, props.startParam);
+  console.log('%cstartParam: %o', `color: ${txtColorRed}`, props.startParam);
 
   let code: Code|undefined = {
     benefitsSwitch: false,
@@ -29,7 +31,7 @@ export const SouPage: FC<SouPageProps> = (props) => {
   };
 
   code = getCode( props.startParam || '' );
-
+  console.log('%ccode: %o', `color: ${txtColorRed}`, code);
   //const linkisopened = sessionStorage.getItem('linkisopened');
   //console.log('%clinkisopened: %o', `color: ${txtColor}`, linkisopened);
 
@@ -51,7 +53,7 @@ export const SouPage: FC<SouPageProps> = (props) => {
   console.log('%cstartposh: %o', `color: ${txtColor}`, startposh);
 
   const [sum, setSum] = useState(startsum);
-  const [posh, setPosh] = useState(startposh.gosp || '');
+  const [posh, setPosh] = useState(startposh || '');
   
   themeParams.mount();
 

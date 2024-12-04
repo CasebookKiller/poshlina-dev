@@ -1,23 +1,34 @@
 
 import { useEffect, useState } from 'react'
 
-import QRcode from 'qrcode';
+import { QRCodeStyling, /*browserImageTools*/ } from "@liquid-js/qr-code-styling";
+import { accentTextColor, backgroundColor } from '../ConfigProvider/variables';
 
-import { QRCodeStyling } from "@liquid-js/qr-code-styling";
+const txtColor = import.meta.env.VITE_TXT_COLOR;
 
-export function QRCode_Styling() {
+export function QRCode_Styling({text}: {text: string}) {
   const [img, setImg] = useState<string>('');
+  console.log(img);
 
   const qrCode = new QRCodeStyling({
-    data: "https://www.facebook.com/",
-    image: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+    data: text,
+    //image: "https://casebookkiller.github.io/poshlina-dev/Logo.svg",
+    shape: "square",
     dotsOptions: {
-      color: "#4267b2",
-      type: "rounded",
-      size: 10
+      color: accentTextColor,
+      type: "random-dot",
+      size: 6,
+    },
+    cornersSquareOptions: {
+      color: accentTextColor,
+      type: "extra-rounded"
+    },
+    cornersDotOptions: {
+      color: accentTextColor,
+      type: "extra-rounded"
     },
     backgroundOptions: {
-      color: "#e9ebee",
+      color: backgroundColor,
       margin: 1
     },
     imageOptions: {
@@ -27,30 +38,44 @@ export function QRCode_Styling() {
     }
   });
   
+
+
   useEffect(() => {
-    console.log(qrCode);
-    qrCode.serialize().then((img) => {
-      if (img !== undefined) {
-        setImg(img);
-        let dataURL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(img);
-        let canvas: any = document.getElementById('canvas');
-let ctx:any;
-if (canvas?.getContext) {
-  ctx = canvas.getContext('2d');
-  // rest of your code
-} else {
-  console.error('Canvas element not found');
-}
+    console.log('%cQRCode: %o', `color: ${txtColor}`, qrCode);
+   
+    function getSize(qrCode: QRCodeStyling) {
+      return {width: qrCode.size?.width, height: qrCode.size?.height};
+    }
 
-let _img = new Image();
-_img.width = 500;
-_img.height = 500; 
+    const size = getSize(qrCode);
+    console.log(size);
+        
+    qrCode.serialize().then((code) => {
+      if (code !== undefined) {
+        setImg(code);
+        let dataURL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(code);
+        let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+        
+        canvas.width = size.width || 0;
+        canvas.height = size.height || 0;
+        
+        let ctx:any;
+        if (canvas?.getContext) {
+          ctx = canvas.getContext('2d');
+          // rest of your code
+        } else {
+          console.error('Canvas element not found');
+        }
 
-_img.addEventListener('load', e => {
-  ctx.drawImage(e.target, 0, 0);
-});
+        let _img = new Image();
+        _img.width = 500;
+        _img.height = 500; 
 
-_img.src = dataURL;
+        _img.addEventListener('load', e => {
+          ctx.drawImage(e.target, 0, 0);
+        });
+
+        _img.src = dataURL;
         }
     });
   }, []);
@@ -59,49 +84,27 @@ _img.src = dataURL;
   
   return (
     <>
+    {/*
       <div className="App">
         <img src={`data:image/svg+xml;utf8,${encodeURIComponent(img)}`} />
       </div>
-      <div className="App">
-        <canvas width={310} height={310} id='canvas'></canvas>
+    */}
+      <div className="App" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight:'300px',
+        width:'auto',
+        overflowY: 'hidden',
+      }}>
+        <canvas className="square" id='canvas' style={{
+          display:'block',
+          padding: 0,
+          maxWidth: '100%',
+          maxHeight: '100%',
+          }}></canvas>
       </div>
     </>
 
   );
-}
-
-interface QRCodeProps {
-  width?: number;
-  margin?: number;
-  color?: {
-    dark?: string;
-    light?: string;
-  }
-}
-
-export default function QRCode({ text, props, setBlob }: { text: string, props: QRCodeProps, setBlob?: React.Dispatch<React.SetStateAction<string>> }) {
-  const [qr, setQr] = useState('');
-  
-  const GenerateQRCode = () => {
-    QRcode.toDataURL(text, props, (err, url) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      
-      setQr(url);
-
-      if (setBlob) {
-        setBlob(url);
-      }
-    })
-  }
-
-  useEffect(() => {
-    GenerateQRCode();
-  })  
-
-  return (
-    <img src={qr} style={{ margin: '5px' }}/>
-  )
 }

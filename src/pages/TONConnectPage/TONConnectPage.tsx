@@ -16,9 +16,11 @@ import { DisplayData } from '@/components/DisplayData/DisplayData.tsx';
 
 import './TONConnectPage.css';
 
+const txtColor = import.meta.env.VITE_TXT_COLOR;
+
 export const TONConnectPage: FC = () => {
-  console.log('TONConnectPage: ', window.location);
-  console.log('history:', history);
+  console.log('%cTONConnectPage: %o', `color: ${txtColor}`, window.location);
+  console.log('%chistory: %o', `color: ${txtColor}`, history);
 
   const wallet = useTonWallet();
   

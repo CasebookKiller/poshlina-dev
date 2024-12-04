@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 *.pem
+
+src/components/Calc/395.*

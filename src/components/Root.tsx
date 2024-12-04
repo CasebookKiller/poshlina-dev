@@ -30,16 +30,19 @@ const ErrorBoundaryError: FC<{ error: unknown }> = ({ error }) => (
   </div>
 );
 
+const txtColor = import.meta.env.VITE_TXT_COLOR;
 
 const Inner: FC = () => {
-  console.log('Запуск приложения');
-  console.log(`Для запуска приложения в режиме отладки запустите бот с параметром: ?startapp=debug\n
-    https://t.me/{botusername}/{appname}?startapp=debug`);
   const LP = useLaunchParams();
-  console.log('Параметры запуска:', LP);
-  const SP = LP.startParam;
-  const debug = SP === 'debug';
-  console.log('Режим отладки:', debug);
+  const SP = LP?.initData?.startParam;
+  
+  console.log('%cЗапуск приложения', `color: ${txtColor}`);
+  console.log(`%cДля запуска приложения в режиме отладки запустите бот с параметром: ?startapp=debug\n
+    https://t.me/{botusername}/{appname}?startapp=debug`, `color: ${txtColor}`);
+  
+  console.log('%cПараметры запуска: %o', `color: ${txtColor}`, LP);
+  const debug = SP?.includes('debug') || SP === 'debug';
+  console.log('%cРежим отладки: %o', `color: ${txtColor}`, debug);
   const manifestUrl = useMemo(() => {
     return new URL('tonconnect-manifest.json', window.location.href).toString();
   }, []);
@@ -47,8 +50,8 @@ const Inner: FC = () => {
   // Включите режим отладки, чтобы просмотреть все отправленные методы и полученные события.
   useEffect(() => {
     if (debug) {
-      console.log('Режим отладки включен');
-      import('eruda').then((lib) => lib.default.init());
+      //console.log('%cРежим отладки включен', 'color: ${txtColor}');
+      //import('eruda').then((lib) => lib.default.init());
     }
   }, [debug]);
 

@@ -12,7 +12,7 @@ import {
 
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
-import { useEffect, type FC} from 'react';
+import { useEffect, useState, type FC} from 'react';
 
 import {
   HashRouter as Router,
@@ -23,15 +23,31 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
-import { routes } from '@/navigation/routes';
+import { Route as AppRoute, routes } from '@/navigation/routes';
+
+import { Code, getOrderedParams, link2code, Param, prepareHash } from './Calc/functions';
+import { SouPage } from '@/pages/SouPage/SouPage';
+import { ArbPage } from '@/pages/ArbPage/ArbPage';
+import { StartUrlPage } from '@/pages/StartUrlPage/StartUrlPage';
+
+const txtColor = import.meta.env.VITE_TXT_COLOR;
 
 function BackButtonManipulator() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  console.log(window.history);
+  console.log(navigate);
+
   useEffect(() => {
     function onClick() {
-      navigate(-1);
+      console.log('%chistory: %o', `color: ${txtColor}`, window.history.state);
+      console.log(window.history.length);
+      if (window.history.state.idx === 1) {
+        navigate('/');
+      } else {
+        navigate(-1);
+      }
     }
     backButton.onClick(onClick);
 
@@ -39,7 +55,9 @@ function BackButtonManipulator() {
   }, [navigate]);
 
   useEffect(() => {
-    console.log('location.pathname: ', location.pathname);
+    console.log('%chistory: %o', `color: ${txtColor}`, window.history.state);
+    console.log(window.history.length);
+    console.log('%clocation.pathname: %o', `color: ${txtColor}`, location.pathname);
     if (location.pathname === '/' || location.pathname === '/poshlina-dev/') {
       backButton.isVisible() && backButton.hide();
     } else {
@@ -116,35 +134,63 @@ function MainButtonManipulator() {
 */
 
 export const App: FC = () => {
-  init();
-  const lp = useLaunchParams();
+  const [code, setCode] = useState<Code>({} as Code);
+
+  init(); console.log('%cinit: %o', `color: ${txtColor}`, miniApp);
+  const LP = useLaunchParams();
+  const SP = LP.initData?.startParam;
+
+  // добавляем straniцы
+  const sou: AppRoute = { path: '/sou', element: <SouPage startParam= {''}/>, title: 'Суды общей юрисдикции' };
+  const arb: AppRoute = { path: '/arb', element: <ArbPage startParam= {''}/>, title: 'Арбитражные суды' };
+  const starturl: AppRoute = { path: '/starturl', element: <StartUrlPage startParam= {SP}/>, title: 'Расчёт по ссылке' };
+  routes.push(sou, arb, starturl);
+
+  const debug = SP?.includes('debug');
+  console.log('%cРежим отладки: %o', `color: ${txtColor}`, debug);
+
+  let orderedParams: Param[] = [];
+
+  useEffect(() => {
+    const arr: string[] = SP?.split(/clc|bro/) ?? [];
+    orderedParams = getOrderedParams(SP ?? '', arr) ?? [];
+
+    orderedParams.forEach((item) => {
+      if (item.name === 'clc') {
+        setCode(link2code(prepareHash(item.value)));
+        console.log('%cclc: %o', `color: ${txtColor}`, code);
+      }
+    })
+  }, []);
   
   miniApp.mount();
-  //miniApp.bindCssVars();
 
   themeParams.mount();
   if (!themeParams.isCssVarsBound()) themeParams.bindCssVars();
-  console.log('ThemeParams', themeParams);
+  console.log('%cThemeParams: %o', `color: ${txtColor}`, themeParams);
 
   if (!viewport.isMounted) viewport.mount();
   
   backButton.mount();
-  console.log('miniApp', miniApp);
+  console.log('%cminiApp: %o', `color: ${txtColor}`, miniApp);
   
   //console.log('popup: ', popup.isSupported());
 
   return (
     <AppRoot
       appearance={miniApp.isDark() ? 'dark' : 'light'}
-      platform={['macos', 'ios'].includes(lp.platform) ? 'ios' : 'base'}
+      platform={['macos', 'ios'].includes(LP.platform) ? 'ios' : 'base'}
 
     >
       <Router>
         {/*<MainButtonManipulator/>*/}
         <BackButtonManipulator/>
         <Routes>
-          {routes.map((route) => <Route key={route.path} {...route} />)}
-          <Route path='*' element={<Navigate to='/'/>}/>
+          {routes.map((route) => {
+            console.log('Route: ', route);
+            return (<Route key={route.path} {...route} />);
+          })}
+          <Route path='*' element={<Navigate to={'/'}/>}/>
         </Routes>
       </Router>
     </AppRoot>
