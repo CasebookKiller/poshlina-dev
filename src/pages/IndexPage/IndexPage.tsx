@@ -10,12 +10,13 @@ import { useNavigate } from 'react-router-dom';
 import { Section, List, Banner } from '@telegram-apps/telegram-ui';
 import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
 import { Button } from 'antd';
+import { AutoCenter, Modal } from 'antd-mobile';
 
 import { Link, StartAppInfo, AppFeatures } from '@/components/';
 
 import { Code, getOrderedParams, link2code, Param, prepareHash } from '@/components/Calc/functions';
 
-import { accentTextColor, hintColor } from '@/components/ConfigProvider/variables';
+import { accentTextColor, backgroundColor, buttonColor, hintColor, textColor } from '@/components/ConfigProvider/variables';
 
 import './IndexPage.css';
 
@@ -81,21 +82,22 @@ const AppHeader: FC = () => {
       //header={'Расчет государственной пошлины'}
       header={<header style={{
       color: accentTextColor,
-      padding: '20px 24px 14px 22px'
+      padding: '20px 24px 20px 22px'
       }}>
         <h1
           style={{
-            fontSize: '16px',
+            fontSize: '18px',
             margin: '0px 0px 0px 0px',
             lineHeight: 'var(--tgui--subheadline2--line_height)',
             fontWeight: 'var(--tgui--font_weight--accent2)'}}
-          >Расчет государственной пошлины</h1><div style={{color: hintColor}}>Версия {version}</div>
+          >Расчет государственной пошлины</h1>
       </header>}
       footer={'Налоговый кодекс РФ предусматривает разные варианты расчетов в завсимости от вида суда'}
     >
       {
         isMobile && qrIsAvailable && <>
           <Banner
+            className='banner'
             before={<QrCodeScan size={30} style={{color: accentTextColor}}/>}
             header={<span style={{
               color: accentTextColor,
@@ -112,11 +114,36 @@ const AppHeader: FC = () => {
                   text: 'с расчетом пошлины',
                   onCaptured(qr: string) {
                     if (qr.includes('https://t.me/'+import.meta.env.VITE_BOT_NAME+'/'+import.meta.env.VITE_APP_NAME+'?startapp=')) {
-                      //setQrResult(qr);
                       console.log('qr: ', qr);
                       qrScanner.close();
                       sessionStorage.setItem('QRUrl', qr);
                       if (qr!=='') navigate('/qrurl');
+                    } else {
+                      qrScanner.close();
+                      modal.show({
+                        title: 'QR-код некорректен',
+                        content: <AutoCenter><span style={{color: accentTextColor}}>Поищите другой код с расчётом.</span></AutoCenter>,
+                        closeOnAction: true,
+                        actions: [
+                          {
+                            key: 'good',
+                            text: 'Хорошо',
+                            primary: true,
+                            style: {
+                              height: '46px',
+                              fontSize: '16px',
+                              borderColor: buttonColor,
+                              color: textColor,
+                              backgroundColor: buttonColor
+                              }
+                            }
+                          ],
+                          bodyStyle: {
+                            color: accentTextColor,
+                            backgroundColor: backgroundColor
+                          }
+                        }
+                      );
                     }
                   },
                 });
@@ -175,6 +202,31 @@ const AppHeader: FC = () => {
   )
 }
 
+const modal = Modal;
+
+const Footer = () => {
+  return (
+    <footer style={{
+      color: accentTextColor,
+      padding: '20px 24px 4px 22px'
+    }}>
+      <h6 style={{
+        fontSize: '14px',
+        margin: '0px 0px 0px 0px',
+        lineHeight: 'var(--tgui--subheadline2--line_height)',
+        fontWeight: 'var(--tgui--font_weight--accent3)'}}
+      >
+        <div>Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.</div>
+        <div style={{marginTop: '16px', fontSize: '12px'}}>
+          <AutoCenter><span style={{marginTop: '14px', color: hintColor}}>Калькулятор пошлины</span></AutoCenter>
+          <AutoCenter><span style={{marginTop: '4px', color: hintColor}}>Версия {version}</span></AutoCenter>
+          <AutoCenter><span style={{marginTop: '4px', color: hintColor}}>© 2024-2025</span></AutoCenter>
+        </div>
+      </h6>
+    </footer>
+  )
+}
+
 export const IndexPage: FC = () => {
   console.log('%cIndexPage: %o', `color: ${txtColor}`, window.location);
   console.log('%chistory: %o', `color: ${txtColor}`, history);
@@ -183,7 +235,8 @@ export const IndexPage: FC = () => {
       <List>
         <AppHeader />  
         <Section
-          footer='Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.'
+          //footer='Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.'
+          footer={<Footer/>}
         >
           <Link to='/sou'>
             <Banner
