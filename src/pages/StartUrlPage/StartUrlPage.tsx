@@ -32,22 +32,12 @@ export const StartUrlPage: FC<StartUrlPageProps> = (props) => {
 
   code = getCode( props.startParam || '' );
   console.log('%ccode: %o', `color: ${txtColorRed}`, code);
-  //const linkisopened = sessionStorage.getItem('linkisopened');
-  //console.log('%clinkisopened: %o', `color: ${txtColor}`, linkisopened);
-
-  //const startlinkcomplete = sessionStorage.getItem('startlinkcomplete');
-  //console.log('%cstartlinkcomplete: %o', `color: ${txtColor}`, startlinkcomplete);
-
-  //if (linkisopened === 'true' && startlinkcomplete !== 'true') {
-  //  sessionStorage.setItem('startlinkcomplete', 'true');
-  //  code = getCode( startParam );
-  //} else {
-  //  code = getCode( '' );
-  //}
   
   const startsum = code?.sou !=='' ? code?.sou.replace(/ /g,'') : code?.arb !=='' ? code?.arb.replace(/ /g,'') || '': '';
 
-  const startposh = calcPosh( startsum || '', 'obsh', code?.benefitsSwitch, code?.discount30Switch, code?.discount50Switch);
+  const courtType = code?.arb !=='' ? 'arb' : 'obsh' ;
+
+  const startposh = calcPosh( startsum || '', courtType, code?.benefitsSwitch, code?.discount30Switch, code?.discount50Switch);
   
   console.log('%cstartsum: %o', `color: ${txtColor}`, startsum);
   console.log('%cstartposh: %o', `color: ${txtColor}`, startposh);
@@ -62,13 +52,19 @@ export const StartUrlPage: FC<StartUrlPageProps> = (props) => {
     <div className="contentWrapper">
       <App>
         <Calc 
-          header={<>Размер государственной пошлины<br/>при обращении в суды общей юрисдикции</>}
-          footer={<>Расчёт размера государственной пошлины производится в соответствии со статьей 333.19 НК РФ.</>}
+          header={courtType === 'obsh' ?
+            <>Размер государственной пошлины<br/>при обращении в суды общей юрисдикции</>:
+            <>Размер государственной пошлины<br/>при обращении в арбитражные суды</>
+          }
+          footer={  courtType === 'obsh' ?
+            <>Расчёт размера государственной пошлины производится в соответствии со статьей 333.19 НК РФ.</>:
+            <>Расчёт размера государственной пошлины производится в соответствии со статьей 333.21 НК РФ.</>
+          }
           sum={sum}
           posh={String(posh)}
           setSum={(newSum) => setSum(newSum as any)} // Cast newSum to any
           setPosh={(newPosh) => setPosh(newPosh as any)} // Cast newPosh to any
-          courtType="obsh"
+          courtType={courtType}
           code={code}
         />
       </App>      

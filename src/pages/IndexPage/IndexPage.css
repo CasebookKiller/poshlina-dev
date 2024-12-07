@@ -2,3 +2,7 @@
   text-decoration: none;
   color: var(--tg-theme-link-color);
 }
+
+.banner:hover {
+  background-color: var(--tgui--tertiary_bg_color);
+}

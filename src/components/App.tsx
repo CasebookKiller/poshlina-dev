@@ -29,6 +29,7 @@ import { Code, getOrderedParams, link2code, Param, prepareHash } from './Calc/fu
 import { SouPage } from '@/pages/SouPage/SouPage';
 import { ArbPage } from '@/pages/ArbPage/ArbPage';
 import { StartUrlPage } from '@/pages/StartUrlPage/StartUrlPage';
+import { QRUrlPage } from '@/pages/QRUrlPage/QRUrlPage';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
@@ -45,6 +46,7 @@ function BackButtonManipulator() {
       console.log(window.history.length);
       if (window.history.state.idx === 1) {
         navigate('/');
+        sessionStorage.setItem('QRUrl', '');
       } else {
         navigate(-1);
       }
@@ -144,7 +146,8 @@ export const App: FC = () => {
   const sou: AppRoute = { path: '/sou', element: <SouPage startParam= {''}/>, title: 'Суды общей юрисдикции' };
   const arb: AppRoute = { path: '/arb', element: <ArbPage startParam= {''}/>, title: 'Арбитражные суды' };
   const starturl: AppRoute = { path: '/starturl', element: <StartUrlPage startParam= {SP}/>, title: 'Расчёт по ссылке' };
-  routes.push(sou, arb, starturl);
+  const qrurl: AppRoute = { path: '/qrurl', element: <QRUrlPage/>, title: 'Расчёт по ссылке' };
+  routes.push(sou, arb, starturl, qrurl);
 
   const debug = SP?.includes('debug');
   console.log('%cРежим отладки: %o', `color: ${txtColor}`, debug);
