@@ -1,7 +1,4 @@
 import {
-//  shareURL,
-//  popup,
-//  mainButton,
   backButton,
   useLaunchParams,
   miniApp,
@@ -12,10 +9,10 @@ import {
 
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
-import { useEffect, useState, type FC} from 'react';
+import { startTransition, useEffect, useState, type FC} from 'react';
 
 import {
-  HashRouter as Router,
+  HashRouter,
   Route,
   Routes,
   Navigate,
@@ -70,71 +67,6 @@ function BackButtonManipulator() {
   return null;
 }
 
-/*
-function MainButtonManipulator() {
-  const location = useLocation();
-
-  let mainButtonParams = {
-    backgroundColor: themeParams.buttonColor() || '#2990ff',
-    textColor: themeParams.buttonTextColor() || '#ffffff',
-    text: 'Поделиться расчетом'
-  }
-  
-  if (!mainButton.isMounted()) mainButton.mount();
-  
-  mainButton.setParams(mainButtonParams);
-  
-  if (location.pathname === '/sou' || location.pathname === '/arb') mainButton.mount();
-  console.log('Добавлена главная кнопка', mainButton);
-
-  useEffect(() => {
-    console.log('location.pathname: ', location.pathname);
-    if (location.pathname === '/sou' || location.pathname === '/arb') {
-      mainButton.setParams({ text: 'Поделиться расчетом', isVisible: true, isEnabled: true });
-      mainButton.mount();
-    } else {
-      mainButton.setParams({ text: 'Перейдите на страницу с расчетом', isVisible: false, isEnabled: true });
-      mainButton.mount();
-    }
-    mainButton.onClick(() => {
-      try {
-        console.log('mainButton.onCLick');
-        popup.open({
-            title: 'Поделиться расчетом!',
-            message: 'Для того чтобы поделиться расчетом, нажмите на кнопку Ok.',
-            buttons: [
-              { id: 'btnproceed', type: 'default', text: 'Ok' },
-              { id: 'btncancel', type: 'cancel' },
-            ],
-          })
-          .then((buttonId: string|null) => {
-            if (buttonId === 'btnproceed') {
-              const url = 'https://t.me/GosPoshlinaDevBot/poshlina';
-              shareURL(`Посмотрите мое приложение ${url}`);
-            } else {
-              console.log(
-                buttonId === null 
-                  ? 'Пользователь не нажимал кнопок.'
-                  : `Пользователь нажал кнопку с ID "${buttonId}"`
-              );
-            }
-           
-          });
-  
-        console.log(popup.isOpened); // true
-        
-        console.log('Окно выбора чата открыто для отправки сообщения.');
-      } catch (error) {
-        console.error('Ошибка при открытии окна выбора чата:', error);
-      }
-    })
-  }, [location]);
-
-  return null;
-  
-}
-*/
-
 export const App: FC = () => {
   const [code, setCode] = useState<Code>({} as Code);
 
@@ -179,13 +111,17 @@ export const App: FC = () => {
   
   //console.log('popup: ', popup.isSupported());
 
+  startTransition(() => {
+    console.log('%corderedParams: %o', `color: ${txtColor}`, orderedParams);
+  })
+
   return (
     <AppRoot
       appearance={miniApp.isDark() ? 'dark' : 'light'}
       platform={['macos', 'ios'].includes(LP.platform) ? 'ios' : 'base'}
 
     >
-      <Router>
+      <HashRouter>
         {/*<MainButtonManipulator/>*/}
         <BackButtonManipulator/>
         <Routes>
@@ -195,7 +131,7 @@ export const App: FC = () => {
           })}
           <Route path='*' element={<Navigate to={'/'}/>}/>
         </Routes>
-      </Router>
+      </HashRouter>
     </AppRoot>
   );
 }

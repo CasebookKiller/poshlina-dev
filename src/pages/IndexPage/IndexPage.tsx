@@ -1,90 +1,26 @@
-import * as packageJson from '../../../package.json';
-const version = packageJson.version;
-
-import { Section, Cell, List, Image, Banner } from '@telegram-apps/telegram-ui';
-import { useEffect, useState, type FC } from 'react';
-
-import { Link } from '@/components/Link/Link.tsx';
-import './IndexPage.css';
-
-import tonSvg from './ton.svg';
-
-import { QrCodeScan, Link45deg, Person, Briefcase } from 'react-bootstrap-icons';
-import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
-import { Code, getOrderedParams, link2code, Param, prepareHash } from '@/components/Calc/functions';
-
-//import { 
-//  AutoCenter,
-//} from 'antd-mobile';
-import { /*backgroundColor,*/ accentTextColor, hintColor, secondaryBgColor, /*secondaryBgColor*/ } from '@/components/ConfigProvider/variables';
-import React from 'react';
-import { Button } from 'antd';
-import { useNavigate } from 'react-router-dom';
-
-const txtColor = import.meta.env.VITE_TXT_COLOR;
 
 const development = false;
 
-const InitData: FC = () => {
-  return (
-    <Link to='/init-data'>
-      <Cell subtitle='Пользовательские данные, информация о чате, технические данные'>Данные инициализации</Cell>
-    </Link>
-  );
-}
+import * as packageJson from '../../../package.json';
+const version = packageJson.version;
 
-const LaunchParams: FC = () => {
-  return (
-    <Link to='/launch-params'>
-      <Cell subtitle='Идентификатор платформы, версия мини-приложения и т.д.'>Параметры запуска</Cell>
-    </Link>
-  );
-}
+import React, { useEffect, useState, type FC } from 'react';
+import { QrCodeScan, Link45deg, Person, Briefcase } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 
-const ThemeParams: FC = () => {
-  return (
-    <Link to='/theme-params'>
-      <Cell subtitle='Информация о палитре приложений Telegram'>Параметры темы</Cell>
-    </Link>
-  );
-}
+import { Section, List, Banner } from '@telegram-apps/telegram-ui';
+import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
+import { Button } from 'antd';
 
-const StartAppInfo: FC = () => {
-  return (
-    <Section
-      header='Данные о запуске приложения'
-      footer='Эти страницы помогают разработчикам узнать больше о текущей информации о запуске'
-    >
-      <InitData />
-      <LaunchParams />
-      <ThemeParams />
-    </Section>
-  );
-}
+import { Link, StartAppInfo, AppFeatures } from '@/components/';
 
-const TonConnect: FC = () => {
-  return (
-    <Link to='/ton-connect'>
-      <Cell
-        before={<Image src={tonSvg} style={{ backgroundColor: '#5288C1' }}/>}
-        subtitle='Подключите кошелек TON'
-      >
-        TON Connect
-      </Cell>
-    </Link>
-  );
-}
+import { Code, getOrderedParams, link2code, Param, prepareHash } from '@/components/Calc/functions';
 
-const AppFeatures: FC = () => {
-  return (
-    <Section
-        header='Особенности'
-        footer='Вы можете воспользоваться этими страницами, чтобы узнать больше о функциях, предоставляемых мини-приложениями Telegram и другими полезными проектами'
-      >
-        <TonConnect />
-    </Section>
-  );
-}
+import { accentTextColor, hintColor } from '@/components/ConfigProvider/variables';
+
+import './IndexPage.css';
+
+const txtColor = import.meta.env.VITE_TXT_COLOR;
 
 const AppHeader: FC = () => {
   const [code, setCode] = useState<Code>({} as Code);
@@ -99,11 +35,6 @@ const AppHeader: FC = () => {
   const isMobile = LP.platform === 'android' || LP.platform === 'ios';
   const qrIsAvailable = miniApp.isMounted() && miniApp.isSupported() && qrScanner.isSupported();
 
-  /*
-  const [qrResult, setQrResult] = useState<string>(()=>{
-    const storedQRUrl = sessionStorage.getItem('QRUrl');
-    return storedQRUrl || '';
-  });*/
   const [bannerLinkHide, setBannerLinkHide] = useState<boolean>(() => {
     const storedBannerLinkState = sessionStorage.getItem('bannerLinkHide');
     return storedBannerLinkState ? storedBannerLinkState === 'true' : false;
@@ -117,7 +48,6 @@ const AppHeader: FC = () => {
 
   useEffect(() => {
     sessionStorage.setItem('bannerLinkHide', bannerLinkHide.toString());
-    //sessionStorage.setItem('QRUrl', qrResult.toString());
   }, [bannerLinkHide]);
 
   useEffect(() => {
@@ -173,7 +103,6 @@ const AppHeader: FC = () => {
               fontWeight: 'var(--tgui--font_weight--accent3)'
             }}>QR-код с расчётом</span>}
             description='Отсканируйте QR-код с расчетом пошлины'
-            className='banner'
             onClick={async ()=> {
               if (!isMobile) {
                 return;
@@ -198,64 +127,7 @@ const AppHeader: FC = () => {
               }
             }}
             tabIndex={-1}
-          >
-            {/*
-            <React.Fragment key=".0">
-              <Link to={'/qrurl'}>
-                <Button
-                  id='btnOpen'
-                  type='primary'
-                  size='small'
-                  style={{
-                    height: '32px',
-                    borderWidth: '2px',
-                    borderRadius: '8px',
-                  }}
-                  tabIndex={-1}
-                  disabled={qrResult === ''}
-                >
-                  Открыть
-                </Button>
-              </Link>
-              <Button
-                id='btnScan'
-                type='primary'
-                size='small'
-                style={{
-                  marginLeft: '8px',
-                  height: '32px',
-                  borderWidth: '2px',
-                  borderRadius: '8px',
-                }}
-                onClick={async ()=> {
-                  if (!isMobile) {
-                    return;
-                  }
-                  if (qrScanner.open.isAvailable()) {
-                    qrScanner.isOpened(); // false
-                    const promise = qrScanner.open({
-                      text: 'с расчетом пошлины',
-                      onCaptured(qr: string) {
-                        if (qr.includes('https://t.me/'+import.meta.env.VITE_BOT_NAME+'/'+import.meta.env.VITE_APP_NAME+'?startapp=')) {
-                          setQrResult(qr);
-                          console.log('qr: ', qr);
-                          qrScanner.close();
-                          navigate('/qrurl');
-                        }
-                      },
-                    });
-                    qrScanner.isOpened(); // true
-                    await promise;
-                    qrScanner.isOpened(); // false
-                  }
-                }}
-                tabIndex={-1}
-              >
-                Сканировать
-              </Button>
-            </React.Fragment>
-            */}
-          </Banner>
+          />            
         </>
       }
       {
@@ -343,4 +215,3 @@ export const IndexPage: FC = () => {
     </>
   );
 };
-
