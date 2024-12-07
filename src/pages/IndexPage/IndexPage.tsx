@@ -1,4 +1,3 @@
-
 const development = false;
 
 import * as packageJson from '../../../package.json';
