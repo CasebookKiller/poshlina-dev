@@ -79,8 +79,6 @@ export function QRCode_Styling({text}: {text: string}) {
         }
     });
   }, []);
-
-  
   
   return (
     <>
