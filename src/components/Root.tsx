@@ -1,4 +1,5 @@
-import { useLaunchParams } from '@telegram-apps/sdk-react';
+import { //init, miniApp,
+  useLaunchParams } from '@telegram-apps/sdk-react';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { type FC, useEffect, useMemo } from 'react';
 
@@ -33,6 +34,11 @@ const ErrorBoundaryError: FC<{ error: unknown }> = ({ error }) => (
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
 const Inner: FC = () => {
+  //init();
+  //const MA = miniApp;
+  //if (!MA.isMounted()) MA.mount();
+  //MA.setHeaderColor('#fff');
+  //MA.setBackgroundColor('#fff');
   const LP = useLaunchParams();
   const SP = LP?.initData?.startParam;
   

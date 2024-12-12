@@ -8,19 +8,31 @@ import { QrCodeScan, Link45deg, Person, Briefcase } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom';
 
 import { Section, List, Banner } from '@telegram-apps/telegram-ui';
-import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
+import { useLaunchParams, qrScanner, miniApp,
+  //themeParams
+} from '@telegram-apps/sdk-react';
 import { Button } from 'antd';
 import { AutoCenter, Modal } from 'antd-mobile';
 
-import { Link, StartAppInfo, AppFeatures } from '@/components/';
+import { Link, StartAppInfo, AppFeatures,
+  //DisplayData
+} from '@/components/';
 
 import { Code, getOrderedParams, link2code, Param, prepareHash } from '@/components/Calc/functions';
 
-import { accentTextColor, backgroundColor, buttonColor, hintColor, textColor } from '@/components/ConfigProvider/variables';
+import { 
+  accentTextColor,
+  backgroundColor,
+  buttonColor,
+  headerBgColor,
+  hintColor,
+  secondaryBgColor,
+  textColor } from '@/components/init';
 
 import './IndexPage.css';
+import { botMethod } from '@/api/bot/methods';
 
-const txtColor = import.meta.env.VITE_TXT_COLOR;
+const TCLR = import.meta.env.VITE_TXT_COLOR;
 
 const AppHeader: FC = () => {
   const [code, setCode] = useState<Code>({} as Code);
@@ -32,6 +44,9 @@ const AppHeader: FC = () => {
   const LP = useLaunchParams();
   const SP = LP.initData?.startParam;
 
+  //const [userId] = useState<string>(LP.initData?.user?.id.toString() || '');
+  //console.log('%cinitData: %o', `color: ${TCLR}`, LP.initData);
+
   const isMobile = LP.platform === 'android' || LP.platform === 'ios';
   const qrIsAvailable = miniApp.isMounted() && miniApp.isSupported() && qrScanner.isSupported();
 
@@ -40,7 +55,7 @@ const AppHeader: FC = () => {
     return storedBannerLinkState ? storedBannerLinkState === 'true' : false;
   });
 
-  console.log('%ccode: %o', `color: ${txtColor}`, code);
+  console.log('%ccode: %o', `color: ${TCLR}`, code);
 
   let orderedParams: Param[] = [];
   const arr: string[] = SP?.split(/clc|bro/) ?? [];
@@ -56,7 +71,7 @@ const AppHeader: FC = () => {
         let _code = link2code(prepareHash(item.value)); 
         let _sum = '';
         setCode(_code);
-        console.log('%cclc: %o', `color: ${txtColor}`, _code);
+        console.log('%cclc: %o', `color: ${TCLR}`, _code);
         
         if ( _code.sou !== '' ) {
           _sum = _code.sou;
@@ -82,6 +97,7 @@ const AppHeader: FC = () => {
       //header={'Расчет государственной пошлины'}
       header={<header style={{
       color: accentTextColor,
+      backgroundColor: secondaryBgColor,
       padding: '20px 24px 20px 22px'
       }}>
         <h1
@@ -90,7 +106,7 @@ const AppHeader: FC = () => {
             margin: '0px 0px 0px 0px',
             lineHeight: 'var(--tgui--subheadline2--line_height)',
             fontWeight: 'var(--tgui--font_weight--accent2)'}}
-          >Расчет государственной пошлины</h1>
+          >Расчёт государственной пошлины</h1>
       </header>}
       footer={'Налоговый кодекс РФ предусматривает разные варианты расчетов в завсимости от вида суда'}
     >
@@ -101,6 +117,7 @@ const AppHeader: FC = () => {
             before={<QrCodeScan size={30} style={{color: accentTextColor}}/>}
             header={<span style={{
               color: accentTextColor,
+              backgroundColor: headerBgColor,
               fontWeight: 'var(--tgui--font_weight--accent3)'
             }}>QR-код с расчётом</span>}
             description='Отсканируйте QR-код с расчетом пошлины'
@@ -205,37 +222,119 @@ const AppHeader: FC = () => {
 const modal = Modal;
 
 const Footer = () => {
+  const ID = useLaunchParams().initData;
+
+  const [userId] = useState<string>(ID?.user?.id.toString() || '');
+  console.log('%cinitData: %o', `color: ${TCLR}`, ID);
+
+  function handleClick() {
+    //https://api.telegram.org/bot${tg.token}/sendMessage?chat_id=${tg.chat_id}&text=${text}`
+    /*{
+      "status": "done",
+      "payload": {
+        "ok": true,
+        "result": {
+          "message_id": 24,
+          "from": {
+            "id": 7989859769,
+            "is_bot": true,
+            "first_name": "Калькулятор пошлины",
+            "username": "tgfee_bot"
+          },
+          "chat": {
+            "id": 275342303,
+            "first_name": "Алексей",
+            "last_name": "Кузнецов",
+            "username": "kuznetsov_proff",
+            "type": "private"
+          },
+          "date": 1733826984,
+          "text": "Калькулятор пошлины загружен."
+        }
+      }
+    }*/
+
+    const request = JSON.stringify({
+      chat_id: ID?.user?.id,
+      text: `Пользователь ${ID?.user?.firstName} ${ID?.user?.lastName} (${ID?.user?.username}) нажал на id: ${ID?.user?.id}.`
+    });
+
+    /*
+    fetchBot(
+      'sendMessage',
+      request,
+      (data) => {
+        console.log('%ccalcLoaded: %o', `color: ${TCLR}`, data);
+      },
+      (error) => {
+        console.log('%cerror: %o', `color: ${TCLR}`, error);
+      }
+    );*/
+    
+    botMethod(
+      'sendMessage',
+      request,
+    ).then((data) => {
+      console.log('%ccalcLoaded: %o', `color: ${TCLR}`, data);
+    }).catch((error) => {
+      console.log('%cerror: %o', `color: ${TCLR}`, error);
+    });
+  
+  }
+
   return (
-    <footer style={{
-      color: accentTextColor,
-      padding: '20px 24px 4px 22px'
-    }}>
-      <h6 style={{
-        fontSize: '14px',
-        margin: '0px 0px 0px 0px',
-        lineHeight: 'var(--tgui--subheadline2--line_height)',
-        fontWeight: 'var(--tgui--font_weight--accent3)'}}
-      >
-        <div>Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.</div>
-        <div style={{marginTop: '16px', fontSize: '12px'}}>
-          <AutoCenter><span style={{marginTop: '14px', color: hintColor}}>Калькулятор пошлины</span></AutoCenter>
-          <AutoCenter><span style={{marginTop: '4px', color: hintColor}}>Версия {version}</span></AutoCenter>
-          <AutoCenter><span style={{marginTop: '4px', color: hintColor}}>© 2024-2025</span></AutoCenter>
-        </div>
-      </h6>
-    </footer>
+    <>
+      <footer style={{
+        color: accentTextColor,
+        padding: '20px 24px 4px 22px'
+      }}>
+        <h6 style={{
+          fontSize: '14px',
+          margin: '0px 0px 0px 0px',
+          lineHeight: 'var(--tgui--subheadline2--line_height)',
+          fontWeight: 'var(--tgui--font_weight--accent3)'}}
+        >
+          <div>Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.</div>
+        </h6>
+      </footer>
+      <div style={{padding: '20px 24px 20px 24px', backgroundColor: backgroundColor, marginTop: '16px', fontSize: '12px'}}>
+        <AutoCenter style={{margin: '4px 4px', color: hintColor}}>
+          <Button
+            size='small'
+            style={{color: hintColor, fontSize: '10px'}}
+            onClick={()=>handleClick()}
+          >UId: {userId}</Button>
+        </AutoCenter>
+        <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Калькулятор пошлины</span></AutoCenter>
+        <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Версия {version}</span></AutoCenter>
+        <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>© 2024-2025</span></AutoCenter>
+        {/*<List>
+          <DisplayData
+            rows={
+              Object
+                .entries(themeParams.state())
+                .map(([title, value]) => ({
+                  title: title
+                    .replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)
+                    .replace(/background/, 'bg'),
+                  value,
+                }))
+            }
+          />
+        </List>*/}
+      </div>
+    </>
   )
 }
 
 export const IndexPage: FC = () => {
-  console.log('%cIndexPage: %o', `color: ${txtColor}`, window.location);
-  console.log('%chistory: %o', `color: ${txtColor}`, history);
+  console.log('%cIndexPage: %o', `color: ${TCLR}`, window.location);
+  console.log('%chistory: %o', `color: ${TCLR}`, history);
   return (
     <>
       <List>
         <AppHeader />  
         <Section
-          //footer='Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.'
           footer={<Footer/>}
         >
           <Link to='/sou'>

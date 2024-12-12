@@ -1,4 +1,4 @@
-import { secondaryBgColor } from "./variables";
+import { secondaryBgColor } from "../init";
 
 export let tokenDividerConfig = {
   //// Component

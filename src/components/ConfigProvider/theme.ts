@@ -4,7 +4,7 @@ import {
   destructiveColor,
   secondaryBgColor,
   textColor,
-} from "./variables";
+} from "../init";
 
 export let tokenThemeConfig = {
   // Seed Token

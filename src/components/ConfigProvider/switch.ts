@@ -1,4 +1,4 @@
-import { buttonColor } from "./variables";
+import { buttonColor } from "../init";
 // ant-switch css-dev-only-do-not-override-1tqhbax
 // ant-switch css-dev-only-do-not-override-1tqhbax ant-switch-checked
 

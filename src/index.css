@@ -74,7 +74,7 @@ html {
     -moz-osx-font-smoothing: grayscale;
   }
 }
-
+/* вот сюда можно перенести цвета из init.ts */
 :root {
     --tgui--bg_color: var(--tg-theme-bg-color,#213035);
     --tgui--text_color: var(--tg-theme-text-color,#ffffff);

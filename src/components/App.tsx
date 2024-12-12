@@ -27,6 +27,7 @@ import { SouPage } from '@/pages/SouPage/SouPage';
 import { ArbPage } from '@/pages/ArbPage/ArbPage';
 import { StartUrlPage } from '@/pages/StartUrlPage/StartUrlPage';
 import { QRUrlPage } from '@/pages/QRUrlPage/QRUrlPage';
+//import { backgroundColor } from './ConfigProvider/variables';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
@@ -119,7 +120,7 @@ export const App: FC = () => {
     <AppRoot
       appearance={miniApp.isDark() ? 'dark' : 'light'}
       platform={['macos', 'ios'].includes(LP.platform) ? 'ios' : 'base'}
-
+      style={{ }}
     >
       <HashRouter>
         {/*<MainButtonManipulator/>*/}

@@ -1,4 +1,4 @@
-import { accentTextColor, linkColor } from "./variables";
+import { accentTextColor, linkColor } from "../init";
 
 export let tokenTypographyConfig = {
   //// Component

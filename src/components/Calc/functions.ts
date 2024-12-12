@@ -305,9 +305,10 @@ export function human2(dosum: any) { // разрядность
 export interface copyToClipboardProps {
   text: string;
   imageurl?: string;
+  blob?: Blob;
 }
 
-const blobEnable = false;
+const blobEnable = true;
 
 /**
  * copyTextToClipboard - копирует текст в буфер
@@ -321,15 +322,14 @@ function copyTextToClipboard(text: string) {
  * Копирует блоб в буфер
  * @param value - объект с текстом или ссылка на картинку. Если текст указывается копируется чистый текст. Если ссылка на картинку указывается копируется блоб PNG.
  */
-async function copyBlobToClipboard(value: copyToClipboardProps) {
-  let _text, _image;
-  if (value.text) _text = new Blob([value.text], {type: 'text/plain'});
-  if (value.imageurl) _image = await fetch(value.imageurl).then(response => response.blob());
+async function copyBlobToClipboard(blob: Blob) {
+  console.log('blob', blob);
+  let _blob;
+  if (blob) _blob = blob;
 
   const _props: Record<string, string | Blob | PromiseLike<string | Blob>> = {
-    "text/plain": _text ? _text : '',
+    [blob.type]: _blob ? _blob : '',
   };
-  _props["image/png"] = _image ? _image : '';
 
   const item = new ClipboardItem(_props);
   await window.navigator.clipboard.write([item]);
@@ -343,7 +343,7 @@ async function copyBlobToClipboard(value: copyToClipboardProps) {
  */
 export async function copyToClipboard(value: copyToClipboardProps) {
   if (blobEnable) {
-    copyBlobToClipboard(value);
+    if (value.blob) copyBlobToClipboard(value.blob);
   } else {
     copyTextToClipboard(value.text);
   }

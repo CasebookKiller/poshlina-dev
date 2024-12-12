@@ -1,4 +1,4 @@
-import { accentTextColor, backgroundColor, fontFamily, secondaryBgColor } from "./variables";
+import { accentTextColor, backgroundColor, fontFamily, secondaryBgColor } from "../init";
 
 export let tokenInputNumberConfig = {
   //// Component

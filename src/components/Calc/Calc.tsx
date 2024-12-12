@@ -28,18 +28,29 @@ import {
 import ruRU from 'antd-mobile/es/locales/ru-RU'
 
 import {
+  accentTextColor,
   backgroundColor,
   hintColor,
   secondaryBgColor,
   sectionHeaderTextColor,
-} from "../ConfigProvider/variables";
+} from "../init";
 
 import { Link } from '../Link/Link';
 
 import './Calc.css';
-import { calcPosh, Code, copyToClipboard, copyToClipboardProps, fixed2, /*GenerateQRCode, */human, sharelink } from './functions';
-import { stepArbText, stepSouText } from './variables';
-import { QRCode_Styling } from '../QRCode/QRCode';
+import {
+  calcPosh,
+  Code,
+  copyToClipboard,
+  copyToClipboardProps,
+  fixed2,
+  human,
+  sharelink
+} from './functions';
+
+import { stepArbText, stepSouText } from './constants';
+import { QRCodeStyling } from '@liquid-js/qr-code-styling';
+import { botMethod } from '@/api/bot/methods';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
@@ -74,7 +85,8 @@ export const Calc: FC<CalcProps> = ({
 }) => {
 
   const LP = useLaunchParams();
-  const userid = LP.initData?.user?.id.toString() || '';
+  const ID = LP.initData;
+  const userid = ID?.user?.id.toString() || '';
   console.log('%cLaunchParams: %o', `color: ${txtColor}`, LP);
 
   console.log('%ccode: %o', `color: pink`, code);
@@ -83,6 +95,7 @@ export const Calc: FC<CalcProps> = ({
 
   console.log('%cstartCalc: %o', `color: ${txtColor}`, startCalc);
   const MA = miniApp;
+  console.log('%cminiApp: %o', `color: ${txtColor}`, MA);
   const VP = viewport;
   const PU = popup;
 
@@ -108,6 +121,10 @@ export const Calc: FC<CalcProps> = ({
 
   const [step, setStep] = useState<number>(Number(startCalc.step));
 
+  //const [blob, setBlob] = useState<Blob>();
+
+  const refCanvas = useRef<HTMLCanvasElement>(null);
+
   const inputSumEl = useRef<InputNumber>(null);
   const buttonCopy = useRef<any>(null);
   const buttonShare = useRef<any>(null);
@@ -127,6 +144,7 @@ export const Calc: FC<CalcProps> = ({
 
   init(); console.log('%cinit()',`color: ${txtColor}`);
   MA.mount(); console.log('%cminiApp.mount(): %o', `color: ${txtColor}`, MA.isMounted());
+  console.log('%cminiApp: %o', `color: ${txtColor}`, MA);
 
   function buttonsDisabled(state: boolean) {
     try {
@@ -277,11 +295,169 @@ export const Calc: FC<CalcProps> = ({
         <Button
           onClick={()=>setPopupVisible(false)}
         >
-          Ok
+          Хорошо
         </Button>
       </MobAutoCenter>
     </>
   )
+
+  /*
+  async function downloadImage(
+    imageSrc: string,
+    nameOfDownload = 'my-image.png',
+  ) {
+    const response = await fetch(imageSrc);
+  
+    const blobImage = await response.blob();
+  
+    const href = URL.createObjectURL(blobImage);
+  
+    const anchorElement = document.createElement('a');
+    anchorElement.href = href;
+    anchorElement.download = nameOfDownload;
+  
+    document.body.appendChild(anchorElement);
+    anchorElement.click();
+  
+    document.body.removeChild(anchorElement);
+    window.URL.revokeObjectURL(href);
+  }
+    */
+
+  
+  
+  /**
+   * Перенести в файл с функциями!!! Не работает из Telegram
+   * @param blob 
+   * @param nameOfDownload 
+   */
+  /*
+  function downloadBlob(blob: Blob, nameOfDownload = 'qrcode.png') {
+    const url = URL.createObjectURL(blob);
+    
+    const anchorElement = document.createElement('a');
+    anchorElement.href = url;
+    anchorElement.download = nameOfDownload;
+
+    document.body.appendChild(anchorElement);
+    anchorElement.click();
+
+    document.body.removeChild(anchorElement);
+    window.URL.revokeObjectURL(url);
+  }*/
+
+  function QRCode_Styling({text}: {text: string}) {
+    const [img, setImg] = useState<string>('');
+
+    console.log(img);
+  
+    const qrCode = new QRCodeStyling({
+      data: text,
+      //image: "https://casebookkiller.github.io/poshlina-dev/Logo.svg",
+      shape: "square",
+      dotsOptions: {
+        color: accentTextColor,
+        type: "random-dot",
+        size: 6,
+      },
+      cornersSquareOptions: {
+        color: accentTextColor,
+        type: "extra-rounded"
+      },
+      cornersDotOptions: {
+        color: accentTextColor,
+        type: "extra-rounded"
+      },
+      backgroundOptions: {
+        color: backgroundColor,
+        margin: 1
+      },
+      imageOptions: {
+        crossOrigin: "anonymous",
+        margin: 1,
+        imageSize: 0.5
+      }
+    });
+  
+    useEffect(() => {
+      console.log('%cQRCode: %o', `color: ${txtColor}`, qrCode);
+     
+      function getSize(qrCode: QRCodeStyling) {
+        return {width: qrCode.size?.width, height: qrCode.size?.height};
+      }
+  
+      const size = getSize(qrCode);
+      console.log(size);
+          
+      qrCode.serialize().then((code) => {
+        if (code !== undefined) {
+          setImg(code);
+          let dataURL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(code);
+          let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+          
+          canvas.width = size.width || 0;
+          canvas.height = size.height || 0;
+          
+          let ctx:any;
+          if (canvas?.getContext) {
+            ctx = canvas.getContext('2d');
+            // rest of your code
+          } else {
+            console.error('Canvas element not found');
+          }
+  
+          let _img = new Image();
+          _img.width = 500;
+          _img.height = 500; 
+  
+          _img.addEventListener('load', e => {
+            ctx.drawImage(e.target, 0, 0);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const url = URL.createObjectURL(blob);
+                //link.href = URL.createObjectURL(blob);
+                //setBlob(blob);                
+                //downloadBlob(blob);
+                
+                console.log(url);
+                //console.log(link.href); // this line should be here
+  
+                //console.log(blob);
+                //const qrblob: Blob = new Blob([blob], { type: 'image/png' });
+                //setBlob(qrblob);  
+              }
+            })
+          });
+  
+          _img.src = dataURL;
+          
+                    
+          
+        }
+      });
+    }, []);
+    
+    return (
+      <>
+        <div className="App" style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight:'300px',
+          width:'auto',
+          overflowY: 'hidden',
+        }}>
+          <canvas ref={refCanvas} className="square" id='canvas' style={{
+            display:'block',
+            padding: 0,
+            maxWidth: '100%',
+            maxHeight: '100%',
+            }}></canvas>
+        </div>
+      </>
+    );
+  }
  
   return (
     <>
@@ -666,23 +842,14 @@ export const Calc: FC<CalcProps> = ({
                       const arb = courtType === 'arb' ? human(sum) : '';
                       const url = sharelink(sou, arb, benefitsSwitch, discount30Switch, discount50Switch, userid); 
                       
-                      const msg = posh ? 'Сумма пошлины: ' + posh.toString() + ' руб.,\nрасчет: ' + url + '' : '';
+                      //const msg = posh ? 'Сумма пошлины: ' + posh.toString() + ' руб.,\nрасчет: ' + url + '' : '';
+                      const msg = posh ? `Сумма пошлины в ${courtType === 'obsh' ? 'суд общей юрисдикции' : 'арбитражный суд'} от цены иска ${human(sum)} руб. составляет: ${posh} руб.\nРасчёт по ссылке: ${url}`: '';
+
                       //Сумма пошлины: 64 311 руб.,
                       //расчет: https://t.me/tgfee_bot/app?startapp=clcg5758755hbro99281932
                       
                       const data: copyToClipboardProps = {text: msg};
                       copyToClipboard(data);
-                      
-                      /*
-                      if (popup.isSupported()) {popup.open({
-                        title: 'Буфер обмена',
-                        message: 'Скопировано в буфер обмена',
-                        buttons: [
-                          { id: 'btnproceed', type: 'default', text: 'Ok' },
-                          { id: 'btncancel', type: 'cancel' },
-                        ]
-                      });}
-                      */
                       showClipboard(posh?.toString());
 
                       if (clipboard) {
@@ -723,7 +890,7 @@ export const Calc: FC<CalcProps> = ({
                           
                             PU.open({
                                 title: 'Поделиться расчетом!',
-                                message: 'Для того чтобы поделиться расчетом, нажмите на кнопку Ok.',
+                                message: 'Для того чтобы поделиться расчетом, нажмите на кнопку Хорошо.',
                                 buttons: [
                                   { id: 'btnproceed', type: 'default', text: 'Хорошо' },
                                   { id: 'btncancel', type: 'cancel' },
@@ -733,7 +900,8 @@ export const Calc: FC<CalcProps> = ({
                                   //const url = 'https://t.me/GosPoshlinaDevBot/poshlina';
                                   
                                   console.log(url);
-                                  shareURL(`Посмотрите мое приложение ${url}`);
+                                  const msg = `Сумма пошлины в ${courtType === 'obsh' ? 'суд общей юрисдикции' : 'арбитражный суд'} от цены иска ${human(sum)} руб. составляет: ${posh} руб.\nРасчёт по ссылке: ${url}`;
+                                  shareURL(msg);
                                 } else {
                                   console.log(
                                     buttonId === null 
@@ -767,16 +935,6 @@ export const Calc: FC<CalcProps> = ({
                       <Share />
                     </Button>:<></>
                   }
-                  {/*<QRCode text={'https://yandex.ru'} props={{
-                          width: 240,
-                          margin: 2,
-                          color: {
-                            light: backgroundColor,
-                            dark: accentTextColor
-                          }
-                        }}
-                          setBlob={setBlob}
-                        />*/}
                   <Button
                     id='btnQrCode'
                     ref={buttonQrCode}
@@ -803,7 +961,65 @@ export const Calc: FC<CalcProps> = ({
                             text: 'Закрыть',
                             onClick: () => {
                               console.log('allgood');
+                              //copyToClipboard(blob);
                               //console.log(blob);
+                            },
+                            style: {
+                              fontSize: '14px',
+                            }
+                          },
+                          {
+                            key: 'tochat',
+                            text: 'Отправить в чат',
+                            onClick: () => {
+                              console.log('tochat');
+
+                              let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+
+                              canvas.toBlob((blob) => {
+                                if (blob) {
+                                  console.log(blob);
+                                  
+                                  /*const data: copyToClipboardProps = {
+                                    text: url,
+                                    blob: blob
+                                  }*/
+                                                              
+                                  let caption = "QR код с расчетом";
+                                  
+                                  //let request = new XMLHttpRequest();
+                                  //request.open('POST', `https://api.telegram.org/bot${import.meta.env.VITE_BOT_TOKEN}/sendPhoto?chat_id=${ID?.user?.id}`);
+                                  //request.send(formData);
+                                  
+                                  let formData = new FormData();
+                                  formData.append('chat_id', ID?.user?.id.toString() || '');
+                                  formData.append('caption', caption);
+                                  formData.append('photo', blob, 'qr.png');
+                            
+                                  /*
+                                  fetch(`https://api.telegram.org/bot${import.meta.env.VITE_BOT_TOKEN}/sendPhoto`, {
+                                    method: 'POST',
+                                    body: formData
+                                  })
+                                    .then(response => response.json())
+                                    .then(response => console.log(response))
+                                    .catch(error => console.log(error));
+                                  */
+
+                                  botMethod(
+                                    'sendPhoto',
+                                    formData
+                                  ).then((result) => {
+                                    console.log(result);
+                                  }).catch((error) => {
+                                    console.log(error);
+                                  })
+                                  //console.log('download blob', blob);
+                                  //downloadBlob(blob);
+                                  //copyToClipboard(data);
+                                }
+                              });
+
                             },
                             style: {
                               fontSize: '14px',
@@ -836,6 +1052,8 @@ export const Calc: FC<CalcProps> = ({
                 }}/>
             </List.Item>
             */}
+            <List.Item style={{width: '100%'}}>
+            </List.Item>
           </List>
           <MobPopup
             visible={popupVisible}

@@ -1,0 +1,19 @@
+{
+  "user":
+  {
+    "id":275342303,
+    "first_name":"Алексей",
+    "last_name":"Кузнецов",
+    "username":"kuznetsov_proff",
+    "language_code":"ru",
+    "is_premium":true,
+    "allows_write_to_pm":true,
+    "photo_url":"https:\/\/t.me\/i\/userpic\/320\/2CiqQwc71uCtRJ4U9lDxhNT69Cc80GOQ9siaD9XEbmQ.svg"
+  },
+  "chat_instance":-6224918917665718056,
+  "chat_type": "private",
+  "start_param": "debug",
+  "auth_date": 1733665170,
+  "signature": "wP0hiNsZtrjRu_f8IE9rbgjic-lnFm4MoSBPKhMvOtZgJDqA8SSQN421SsnqxQResAsZaShR4eUuL4WKUAQLCQ",
+  "hash": "83eb57c847e68e0ae6eab388f3d4d847aa73b2456a3f522ec5a044ece349adb8"
+}

@@ -2,7 +2,7 @@ import {
   accentTextColor,
   fontFamily,
   secondaryBgColor,
-} from "./variables";
+} from "../init";
 
 export let tokenInputConfig = {
   activeBg: accentTextColor, //

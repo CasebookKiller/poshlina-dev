@@ -1,4 +1,4 @@
-import { outlineColor, secondaryBgColor } from "./variables";
+import { outlineColor, secondaryBgColor } from "../init";
 import './list.css';
 
 export let tokenListConfig = {

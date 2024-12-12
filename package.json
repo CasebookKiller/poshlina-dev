@@ -17,8 +17,10 @@
   "dependencies": {
     "@liquid-js/qr-code-styling": "file:../qr-code-styling",
     "@liquid-js/qrcode-generator": "^1.0.1",
-    "@telegram-apps/sdk": "^2.4.0",
-    "@telegram-apps/sdk-react": "^2.0.9",
+    "@telegram-apps/bridge": "^1.7.1",
+    "@telegram-apps/sdk": "^2.9.1",
+    "@telegram-apps/sdk-react": "^2.0.19",
+    "@telegram-apps/signals": "^1.1.0",
     "@telegram-apps/telegram-ui": "^2.1.8",
     "@tonconnect/ui-react": "^2.0.9",
     "@types/react": "^18.3.14",
@@ -35,6 +37,7 @@
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.3.1",
     "sharp": "^0.33.5",
+    "telegramsjs": "^4.6.0",
     "vite": "^6.0.3"
   },
   "devDependencies": {

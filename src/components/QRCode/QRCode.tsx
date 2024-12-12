@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 
 import { QRCodeStyling, /*browserImageTools*/ } from "@liquid-js/qr-code-styling";
-import { accentTextColor, backgroundColor } from '../ConfigProvider/variables';
+import { accentTextColor, backgroundColor } from '../init';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 

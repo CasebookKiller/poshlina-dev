@@ -6,7 +6,7 @@ import {
   textColor,
   buttonColor,
   fontWeightAccent2,
-} from "./variables";
+} from "../init";
 
 export let tokenButtonConfig = {  
   //// Component
