@@ -25,8 +25,12 @@ import { Route as AppRoute, routes } from '@/navigation/routes';
 import { Code, getOrderedParams, link2code, Param, prepareHash } from './Calc/functions';
 import { SouPage } from '@/pages/SouPage/SouPage';
 import { ArbPage } from '@/pages/ArbPage/ArbPage';
+import { NK333_19Page } from '@/pages/NK333_19Page/NK333_19Page';
 import { StartUrlPage } from '@/pages/StartUrlPage/StartUrlPage';
 import { QRUrlPage } from '@/pages/QRUrlPage/QRUrlPage';
+import { NK333_21Page } from '@/pages/NK333_21Page/NK333_21Page';
+import { NK333_36Page } from '@/pages/NK333_36Page/NK333_36Page';
+import { NK333_37Page } from '@/pages/NK333_37Page/NK333_37Page';
 //import { backgroundColor } from './ConfigProvider/variables';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
@@ -75,12 +79,19 @@ export const App: FC = () => {
   const LP = useLaunchParams();
   const SP = LP.initData?.startParam;
 
-  // добавляем straniцы
+  // добавляем страницы
   const sou: AppRoute = { path: '/sou', element: <SouPage startParam= {''}/>, title: 'Суды общей юрисдикции' };
   const arb: AppRoute = { path: '/arb', element: <ArbPage startParam= {''}/>, title: 'Арбитражные суды' };
+  
+  const nk333_19: AppRoute = { path: '/nk333_19', element: <NK333_19Page hash= {''}/>, title: 'Статья 333.19 НК РФ' };
+  const nk333_21: AppRoute = { path: '/nk333_21', element: <NK333_21Page hash= {''}/>, title: 'Статья 333.21 НК РФ' };
+  const nk333_36: AppRoute = { path: '/nk333_36', element: <NK333_36Page hash= {''}/>, title: 'Статья 333.36 НК РФ' };
+  const nk333_37: AppRoute = { path: '/nk333_37', element: <NK333_37Page hash= {''}/>, title: 'Статья 333.37 НК РФ' };
+  
   const starturl: AppRoute = { path: '/starturl', element: <StartUrlPage startParam= {SP}/>, title: 'Расчёт по ссылке' };
   const qrurl: AppRoute = { path: '/qrurl', element: <QRUrlPage/>, title: 'Расчёт по ссылке' };
-  routes.push(sou, arb, starturl, qrurl);
+  
+  routes.push(sou, arb, nk333_19, nk333_21, nk333_36, nk333_37, starturl, qrurl);
 
   const debug = SP?.includes('debug');
   console.log('%cРежим отладки: %o', `color: ${txtColor}`, debug);

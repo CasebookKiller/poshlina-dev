@@ -6,6 +6,8 @@ import './ArbPage.css'
 import { App } from "antd";
 import { themeParams, /*useLaunchParams*/ } from "@telegram-apps/sdk-react";
 import { calcPosh, Code, getCode } from "@/components/Calc/functions";
+import { Link } from "@/components";
+import { hintColor } from "@/components/init";
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
@@ -62,7 +64,7 @@ export const ArbPage: FC<ArbPageProps> = ( props ) => {
       <App>
         <Calc 
           header='Размер государственной пошлины при обращении в арбитражные суды'
-          footer='Расчёт размера государственной пошлины производится в соответствии со статьей 333.21 НК РФ.'
+          footer={<div style={{color: hintColor}}>Расчёт размера государственной пошлины производится в соответствии со <Link to='/nk333_21'>статьей 333.21 НК РФ</Link>.</div>}
           sum={sum}
           posh={String(posh)}
           setSum={(newSum) => setSum(newSum as any)} // Cast newSum to any

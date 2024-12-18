@@ -6,6 +6,8 @@ import './SouPage.css'
 import { App } from "antd";
 import { themeParams, /*useLaunchParams*/ } from "@telegram-apps/sdk-react";
 import { calcPosh, Code, getCode } from "@/components/Calc/functions";
+import { Link } from "@/components";
+import { hintColor } from "@/components/init";
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
@@ -61,7 +63,7 @@ export const SouPage: FC<SouPageProps> = (props) => {
       <App>
         <Calc 
           header={<>Размер государственной пошлины<br/>при обращении в суды общей юрисдикции</>}
-          footer={<>Расчёт размера государственной пошлины производится в соответствии со статьей 333.19 НК РФ.</>}
+          footer={<div style={{color: hintColor}}>Расчёт размера государственной пошлины производится в соответствии со <Link to='/nk333_19'>статьей 333.19 НК РФ</Link>.</div>}
           sum={sum}
           posh={String(posh)}
           setSum={(newSum) => setSum(newSum as any)} // Cast newSum to any

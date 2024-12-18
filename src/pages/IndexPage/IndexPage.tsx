@@ -202,6 +202,8 @@ const AppHeader: FC = () => {
               </Link>
               <Button
                 style={{
+                  borderColor: accentTextColor,
+                  backgroundColor: 'rgba(0, 0, 0, 0)',
                   color: accentTextColor,
                   height: '32px',
                   marginLeft: '8px'
@@ -301,7 +303,7 @@ const Footer = () => {
         <AutoCenter style={{margin: '4px 4px', color: hintColor}}>
           <Button
             size='small'
-            style={{color: hintColor, fontSize: '10px'}}
+            style={{backgroundColor: backgroundColor, color: hintColor, fontSize: '10px'}}
             onClick={()=>handleClick()}
           >UId: {userId}</Button>
         </AutoCenter>

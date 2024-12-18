@@ -4,9 +4,7 @@ import {
   type FC, type ReactNode
 } from 'react';
 
-import { init, miniApp, popup, shareURL, viewport } from '@telegram-apps/sdk';
-
-import { useSignal, useLaunchParams } from '@telegram-apps/sdk-react';
+import { init, miniApp, openTelegramLink, popup, shareURL, viewport, useSignal, useLaunchParams } from '@telegram-apps/sdk-react';
 
 import { PrimeReactProvider } from 'primereact/api';
 import { InputNumber } from 'primereact/inputnumber'; // https://primereact.org/inputnumber/
@@ -16,13 +14,13 @@ import { Typography, Button, List, Switch } from 'antd';
 
 const { Title, Text } = Typography;
 
-import { Copy, QrCode, Share, Trash } from 'react-bootstrap-icons';
+import { Copy, QrCode, Share, Trash, BoxArrowRight, ChatLeftDots } from 'react-bootstrap-icons';
 
 import {
+  Button as MobButton,
   CenterPopup as MobPopup,
   ConfigProvider as MobConfigProvider,
   AutoCenter as MobAutoCenter,
-  Dialog as MobDialog,
 } from 'antd-mobile';
 
 import ruRU from 'antd-mobile/es/locales/ru-RU'
@@ -121,9 +119,8 @@ export const Calc: FC<CalcProps> = ({
 
   const [step, setStep] = useState<number>(Number(startCalc.step));
 
-  //const [blob, setBlob] = useState<Blob>();
-
   const refCanvas = useRef<HTMLCanvasElement>(null);
+  const refCanvasBW = useRef<HTMLCanvasElement>(null);
 
   const inputSumEl = useRef<InputNumber>(null);
   const buttonCopy = useRef<any>(null);
@@ -131,6 +128,7 @@ export const Calc: FC<CalcProps> = ({
   const buttonQrCode = useRef<any>(null);
 
   const [popupVisible, setPopupVisible] = useState(false);
+  const [popupQRVisible, setPopupQRVisible] = useState(false);
 
   useEffect(() => {
     console.log('%cМини приложение ' + (MAisMounted ? 'смонтировано.' : 'размонтировано.'), MAisMounted ? 'color: lightgreen': 'color: #FFC0CB'); 
@@ -301,6 +299,21 @@ export const Calc: FC<CalcProps> = ({
     </>
   )
 
+  const MockContentWithQRCode = () => {
+    const sou = courtType === 'obsh' ? human(sum) : '';
+    const arb = courtType === 'arb' ? human(sum) : '';
+    const url = sharelink(sou, arb, benefitsSwitch, discount30Switch, discount50Switch, userid); 
+    console.log('url: ',url);
+    
+    return (
+      <>
+        <div style={{ padding: '40px 20px 10px' }}>
+          <QRCode_Styling text={url}/>
+        </div>
+      </>
+      )
+  }
+    
   /*
   async function downloadImage(
     imageSrc: string,
@@ -322,9 +335,8 @@ export const Calc: FC<CalcProps> = ({
     document.body.removeChild(anchorElement);
     window.URL.revokeObjectURL(href);
   }
-    */
+  */
 
-  
   
   /**
    * Перенести в файл с функциями!!! Не работает из Telegram
@@ -347,9 +359,13 @@ export const Calc: FC<CalcProps> = ({
   }*/
 
   function QRCode_Styling({text}: {text: string}) {
-    const [img, setImg] = useState<string>('');
-
-    console.log(img);
+    const cardFront = 'Цвета приложения';
+    const cardBack = 'Чёрное на белом';
+    const [isFlipped, setFlipped] = useState(false);
+  
+    const handleFlip = () => {
+        setFlipped(!isFlipped);
+    };
   
     const qrCode = new QRCodeStyling({
       data: text,
@@ -358,7 +374,7 @@ export const Calc: FC<CalcProps> = ({
       dotsOptions: {
         color: accentTextColor,
         type: "random-dot",
-        size: 6,
+        size: 18,
       },
       cornersSquareOptions: {
         color: accentTextColor,
@@ -378,9 +394,40 @@ export const Calc: FC<CalcProps> = ({
         imageSize: 0.5
       }
     });
+
+    
+
+    const qrCodeBW = new QRCodeStyling({
+      data: text,
+      //image: "https://casebookkiller.github.io/poshlina-dev/Logo.svg",
+      shape: "square",
+      dotsOptions: {
+        color: 'black',
+        type: "random-dot",
+        size: 18,
+      },
+      cornersSquareOptions: {
+        color: 'black',
+        type: "extra-rounded"
+      },
+      cornersDotOptions: {
+        color: 'black',
+        type: "extra-rounded"
+      },
+      backgroundOptions: {
+        color: 'white',
+        margin: 1
+      },
+      imageOptions: {
+        crossOrigin: "anonymous",
+        margin: 1,
+        imageSize: 0.5
+      }
+    });
   
     useEffect(() => {
       console.log('%cQRCode: %o', `color: ${txtColor}`, qrCode);
+      console.log('%cQRCodeBW: %o', `color: ${txtColor}`, qrCodeBW);
      
       function getSize(qrCode: QRCodeStyling) {
         return {width: qrCode.size?.width, height: qrCode.size?.height};
@@ -388,73 +435,221 @@ export const Calc: FC<CalcProps> = ({
   
       const size = getSize(qrCode);
       console.log(size);
-          
+
+      const sizebw = getSize(qrCodeBW);
+      console.log(sizebw);
+
+
+      
+      // в цветах темы    
+
       qrCode.serialize().then((code) => {
         if (code !== undefined) {
-          setImg(code);
           let dataURL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(code);
+          
           let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
           
           canvas.width = size.width || 0;
           canvas.height = size.height || 0;
+
           
           let ctx:any;
           if (canvas?.getContext) {
             ctx = canvas.getContext('2d');
-            // rest of your code
           } else {
             console.error('Canvas element not found');
           }
   
           let _img = new Image();
-          _img.width = 500;
-          _img.height = 500; 
-  
+          _img.width = 1024;
+          _img.height = 1024;
+          
           _img.addEventListener('load', e => {
             ctx.drawImage(e.target, 0, 0);
 
             canvas.toBlob((blob) => {
               if (blob) {
                 const url = URL.createObjectURL(blob);
-                //link.href = URL.createObjectURL(blob);
-                //setBlob(blob);                
-                //downloadBlob(blob);
-                
                 console.log(url);
-                //console.log(link.href); // this line should be here
+              }
+            })
+          });
   
-                //console.log(blob);
-                //const qrblob: Blob = new Blob([blob], { type: 'image/png' });
-                //setBlob(qrblob);  
+          _img.src = dataURL;
+
+
+        }
+      });
+
+      qrCode.append(document.getElementById('canvas') as HTMLCanvasElement);
+      // черное на белом
+      qrCodeBW.serialize().then((code) => {
+        if (code !== undefined) {
+          let dataURL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(code);
+          let canvasbw: HTMLCanvasElement = document.getElementById('canvasbw') as HTMLCanvasElement;
+          
+          canvasbw.width = size.width || 0;
+          canvasbw.height = size.height || 0;
+          
+          let ctx:any;
+          if (canvasbw?.getContext) {
+            ctx = canvasbw.getContext('2d');
+          } else {
+            console.error('Canvas element not found');
+          }
+  
+          let _img = new Image();
+          _img.width = 1024;
+          _img.height = 1024; 
+  
+          _img.addEventListener('load', e => {
+            ctx.drawImage(e.target, 0, 0);
+
+            canvasbw.toBlob((blob) => {
+              if (blob) {
+                const url = URL.createObjectURL(blob);
+                console.log(url);
               }
             })
           });
   
           _img.src = dataURL;
           
-                    
-          
         }
       });
+
     }, []);
     
     return (
       <>
-        <div className="App" style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight:'300px',
-          width:'auto',
-          overflowY: 'hidden',
-        }}>
-          <canvas ref={refCanvas} className="square" id='canvas' style={{
-            display:'block',
-            padding: 0,
-            maxWidth: '100%',
-            maxHeight: '100%',
-            }}></canvas>
-        </div>
+      <PrimeReactProvider value={{unstyled: false}}>
+        <MobConfigProvider locale={ruRU}>
+          <div className="App" style={{
+            display: 'flex',
+            justifyContent: 'center',
+            minHeight:'370px',
+            width:'auto',
+            overflowY: 'hidden',
+          }}>
+            <div className="QRFlip">
+              <h4 style={{color: accentTextColor, margin: '0px 0px 10px 0px'}}>Нажми для изменения цвета</h4>
+              <div className="container">
+                <div
+                  className={`flip-card ${
+                    isFlipped ? "flipped" : ""
+                  }`}
+                >
+                  <div className="flip-card-inner">
+                    <div className="flip-card-front">
+                      <div
+                        className="card-content"
+                        onClick={handleFlip}
+                      >
+                        {cardFront}
+                        <div className='placeholder'>
+                          <canvas ref={refCanvas} className="square" id='canvas' style={{
+                            display:'block',
+                            padding: 0,
+                            maxWidth: '234px',
+                            maxHeight: '234px',
+                          }}/>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flip-card-back">
+                      <div
+                        className="card-content"
+                        onClick={handleFlip}
+                      >
+                        {cardBack}
+                        <div className='placeholder'>
+                          <canvas ref={refCanvasBW} className="square" id='canvasbw' style={{
+                            display:'block',
+                            padding: 0,
+                            maxWidth: '234px',
+                            maxHeight: '234px',
+                          }}/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <MobAutoCenter style={{margin: '20px 0px 0px 0px', width: '100%'}}>
+                  <PrimeReactFlex>
+                    <MobButton
+                      id='btnSendToChat'
+                      style={{ width: '100%', height: '34px', fontSize: '12px'}}
+                      onClick={() => {
+                        let canvas: HTMLCanvasElement;
+                        if (isFlipped) {
+                          canvas = document.getElementById('canvasbw') as HTMLCanvasElement;
+                        } else {
+                          canvas = document.getElementById('canvas') as HTMLCanvasElement;
+                        }
+                        
+                        canvas.toBlob((blob) => {
+                          if (blob) {
+                            const sou = courtType === 'obsh' ? human(sum) : '';
+                            const arb = courtType === 'arb' ? human(sum) : '';
+                            const url = sharelink(sou, arb, benefitsSwitch, discount30Switch, discount50Switch, userid); 
+                      
+                            const caption = posh ? `<b>При обращении в ${courtType === 'obsh' ? 'суд общей юрисдикции' : 'арбитражный суд'}</b>\n\nс ценой иска: <b>${human(sum)} руб.</b>\n\nРазмер пошлины составляет:\n\n<b>${human(posh)} руб.</b>\n\n<a href='${url}'>Открыть расчёт</a>`: '';
+                            
+                            let formData = new FormData();
+                            formData.append('chat_id', ID?.user?.id.toString() || '');
+                            formData.append('parse_mode', 'html');
+                            formData.append('caption', caption);
+                            //formData.append('caption_entities', JSON.stringify([]));
+                            formData.append('photo', blob, 'qr.png');
+                            botMethod(
+                              'sendPhoto',
+                              formData
+                            ).then((result) => {
+                              console.log(result);
+                              setPopupQRVisible(false);
+                              if (openTelegramLink.isAvailable()) {
+                                openTelegramLink('https://t.me/'+import.meta.env.VITE_BOT_NAME);
+                              }
+                            }).catch((error) => {
+                              console.log(error);
+                            })
+                            //downloadBlob(blob);
+                            //copyToClipboard(data);
+                          }
+                        });
+
+                      }}
+                    >
+                      <div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
+                        <ChatLeftDots/>
+                        <span style={{marginLeft:'5px', fontWeight: 'normal'}}>Сохранить в чат</span>
+                      </div>
+                    </MobButton>
+                    <MobButton
+                      style={{
+                        height: '34px',
+                        fontSize: '12px',
+                        backgroundColor: backgroundColor,
+                        color: hintColor,
+                        alignItems: 'center',
+                        borderColor: hintColor
+                      }}
+                      onClick={() => {
+                        setPopupQRVisible(false);
+                      }}
+                    >
+                      <div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
+                        <BoxArrowRight/>
+                        <span style={{marginLeft:'5px', fontWeight: 'normal'}}>Закрыть</span>
+                      </div>
+                    </MobButton>
+                  </PrimeReactFlex>
+                </MobAutoCenter>
+              </div>
+            </div>
+          </div>
+          </MobConfigProvider>
+        </PrimeReactProvider>
       </>
     );
   }
@@ -652,13 +847,23 @@ export const Calc: FC<CalcProps> = ({
                 courtType === 'obsh' ?
                 <>
                   <Text style={{color: hintColor}} className='unselectable'>
-                    <Link to='/' tabIndex={-1}>Льготные категории</Link> плательщиков определены п.2, п.3 ст.333.36 НК РФ.
+                    <Link
+                      to='/nk333_36'
+                      tabIndex={-1}
+                    >
+                      Льготные категории
+                    </Link> плательщиков определены п.2, п.3 ст.333.36 НК РФ.
                   </Text>
                 </>
                 :
                 <>
                   <Text style={{color: hintColor}} className='unselectable'>
-                    <Link to='/' tabIndex={-1}>Льготные категории</Link> плательщиков определены п.2, п.3 ст.333.37 НК РФ.
+                    <Link
+                      to='/nk333_37'
+                      tabIndex={-1}
+                    >
+                      Льготные категории
+                    </Link> плательщиков определены п.2, п.3 ст.333.37 НК РФ.
                   </Text>
                 </>
                 }  
@@ -687,7 +892,12 @@ export const Calc: FC<CalcProps> = ({
                     description={
                       <>
                         <Text style={{color: hintColor}} className='unselectable'>
-                          <Link to='/' tabIndex={-1}>Ситуации</Link> для применения скидки в 30% определены пп.10 п.1 ст.333.19 НК РФ.
+                          <Link
+                            to='/nk333_19'
+                            tabIndex={-1}
+                          >
+                            Ситуации
+                          </Link> для применения скидки в 30% определены пп.10 п.1 ст.333.19 НК РФ.
                         </Text>
                       </>}  
                   />
@@ -716,7 +926,12 @@ export const Calc: FC<CalcProps> = ({
                     description={
                       <>
                         <Text style={{color: hintColor}} className='unselectable'>
-                          <Link to='/' tabIndex={-1}>Ситуации</Link> для применения скидки в 30% определены пп.13 п.1 ст.333.21 НК РФ.
+                          <Link
+                            to='/nk333_21'
+                            tabIndex={-1}
+                          >
+                            Ситуации
+                          </Link> для применения скидки в 30% определены пп.13 п.1 ст.333.21 НК РФ.
                         </Text>
                       </>}  
                   />
@@ -742,7 +957,12 @@ export const Calc: FC<CalcProps> = ({
                     description={
                       <>
                         <Text style={{color: hintColor}} className='unselectable'>
-                          <Link to='/' tabIndex={-1}>Ситуации</Link> для применения скидки в 50% определены пп.9 п.1 ст.333.21 НК РФ.
+                          <Link
+                            to='/nk333_21'
+                            tabIndex={-1}
+                          >
+                            Ситуации
+                          </Link> для применения скидки в 50% определены пп.9 п.1 ст.333.21 НК РФ.
                         </Text>
                       </>}  
                   />
@@ -842,7 +1062,6 @@ export const Calc: FC<CalcProps> = ({
                       const arb = courtType === 'arb' ? human(sum) : '';
                       const url = sharelink(sou, arb, benefitsSwitch, discount30Switch, discount50Switch, userid); 
                       
-                      //const msg = posh ? 'Сумма пошлины: ' + posh.toString() + ' руб.,\nрасчет: ' + url + '' : '';
                       const msg = posh ? `Сумма пошлины в ${courtType === 'obsh' ? 'суд общей юрисдикции' : 'арбитражный суд'} от цены иска ${human(sum)} руб. составляет: ${posh} руб.\nРасчёт по ссылке: ${url}`: '';
 
                       //Сумма пошлины: 64 311 руб.,
@@ -876,42 +1095,34 @@ export const Calc: FC<CalcProps> = ({
                         borderRadius: '16px',
                       }}
                       onClick={() => {
-                        //const LP = useLaunchParams();
-  
                         const sou = courtType === 'obsh' ? human(sum) : '';
                         const arb = courtType === 'arb' ? human(sum) : '';
                         const url = sharelink(sou, arb, benefitsSwitch, discount30Switch, discount50Switch, userid); 
-                        console.log('url: ',url);
-                                  
                         try {
                           console.log('%cmainButton.onCLick',`color: ${txtColor}`);
                           
                           if (PU.isSupported()) {
                           
                             PU.open({
-                                title: 'Поделиться расчетом!',
-                                message: 'Для того чтобы поделиться расчетом, нажмите на кнопку Хорошо.',
-                                buttons: [
-                                  { id: 'btnproceed', type: 'default', text: 'Хорошо' },
-                                  { id: 'btncancel', type: 'cancel' },
-                                ],
-                              }).then((buttonId: string|null) => {
-                                if (buttonId === 'btnproceed') {
-                                  //const url = 'https://t.me/GosPoshlinaDevBot/poshlina';
-                                  
-                                  console.log(url);
-                                  const msg = `Сумма пошлины в ${courtType === 'obsh' ? 'суд общей юрисдикции' : 'арбитражный суд'} от цены иска ${human(sum)} руб. составляет: ${posh} руб.\nРасчёт по ссылке: ${url}`;
-                                  shareURL(msg);
-                                } else {
-                                  console.log(
-                                    buttonId === null 
-                                      ? 'Пользователь не нажимал кнопок.'
-                                      : `Пользователь нажал кнопку с ID "${buttonId}"`
-                                  );
-                                }
-                              }).catch((error: unknown)=>{
+                              title: 'Поделиться расчетом!',
+                              message: 'Для того чтобы поделиться расчетом, нажмите на кнопку Хорошо.',
+                              buttons: [
+                                { id: 'btnproceed', type: 'default', text: 'Хорошо' },
+                                { id: 'btncancel', type: 'cancel' },
+                              ],
+                            }).then((buttonId: string|null) => {
+                              if (buttonId === 'btnproceed') {
+                                console.log(url);
+                                const msg = `Сумма пошлины в ${courtType === 'obsh' ? 'суд общей юрисдикции' : 'арбитражный суд'} от цены иска ${human(sum)} руб. составляет: ${posh} руб.\nРасчёт по ссылке: ${url}`;
+                                shareURL(msg);
+                              } else {
+                                console.log(
+                                  buttonId === null 
+                                    ? 'Пользователь не нажимал кнопок.'
+                                    : `Пользователь нажал кнопку с ID "${buttonId}"`
+                                );
+                              }}).catch((error: unknown)=>{
                                 if (error instanceof Error) {
-                                  //console.log(error.message);
                                   if (error.message.includes('ERR_ALLREADY_CALLED')) {
                                     console.log('%cОкно уже открыто.','color: #FFC0CB');
                                   }
@@ -919,18 +1130,14 @@ export const Calc: FC<CalcProps> = ({
                                   console.log('Неизвестная ошибка: ',error);
                                 }
                               });
-                      
                             console.log(PU.isOpened); // true
-                            
                             console.log('Всплывающее окно открыто.');
                           }
                         } catch (error) {
                           console.error('Ошибка при открытии всплывающего окна:', error);
-                            
                         }
                       }}
                       tabIndex={-1}
-                      //disabled={!posh || Number(posh) <= 0 || posh === '0' ? true : false}
                     >
                       <Share />
                     </Button>:<></>
@@ -951,88 +1158,10 @@ export const Calc: FC<CalcProps> = ({
                       const arb = courtType === 'arb' ? human(sum) : '';
                       const url = sharelink(sou, arb, benefitsSwitch, discount30Switch, discount50Switch, userid); 
                       console.log('url: ',url);
-                        
-                      MobDialog.show({
-                        content: <QRCode_Styling text={url}/>, 
-                        closeOnAction: true,
-                        actions: [
-                          {
-                            key: 'close',
-                            text: 'Закрыть',
-                            onClick: () => {
-                              console.log('allgood');
-                              //copyToClipboard(blob);
-                              //console.log(blob);
-                            },
-                            style: {
-                              fontSize: '14px',
-                            }
-                          },
-                          {
-                            key: 'tochat',
-                            text: 'Отправить в чат',
-                            onClick: () => {
-                              console.log('tochat');
-
-                              let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-
-                              canvas.toBlob((blob) => {
-                                if (blob) {
-                                  console.log(blob);
-                                  
-                                  /*const data: copyToClipboardProps = {
-                                    text: url,
-                                    blob: blob
-                                  }*/
-                                                              
-                                  let caption = "QR код с расчетом";
-                                  
-                                  //let request = new XMLHttpRequest();
-                                  //request.open('POST', `https://api.telegram.org/bot${import.meta.env.VITE_BOT_TOKEN}/sendPhoto?chat_id=${ID?.user?.id}`);
-                                  //request.send(formData);
-                                  
-                                  let formData = new FormData();
-                                  formData.append('chat_id', ID?.user?.id.toString() || '');
-                                  formData.append('caption', caption);
-                                  formData.append('photo', blob, 'qr.png');
-                            
-                                  /*
-                                  fetch(`https://api.telegram.org/bot${import.meta.env.VITE_BOT_TOKEN}/sendPhoto`, {
-                                    method: 'POST',
-                                    body: formData
-                                  })
-                                    .then(response => response.json())
-                                    .then(response => console.log(response))
-                                    .catch(error => console.log(error));
-                                  */
-
-                                  botMethod(
-                                    'sendPhoto',
-                                    formData
-                                  ).then((result) => {
-                                    console.log(result);
-                                  }).catch((error) => {
-                                    console.log(error);
-                                  })
-                                  //console.log('download blob', blob);
-                                  //downloadBlob(blob);
-                                  //copyToClipboard(data);
-                                }
-                              });
-
-                            },
-                            style: {
-                              fontSize: '14px',
-                            }
-                          }
-                        ],
-                        bodyStyle: {
-                          backgroundColor: backgroundColor,
-                        }
-                      })
+                      
+                      setPopupQRVisible(true);
                     }}
                     tabIndex={-1}
-                    //disabled={!posh || Number(posh) <= 0 || posh === '0' ? true : false}
                   >
                     <QrCode />
                   </Button>
@@ -1040,22 +1169,22 @@ export const Calc: FC<CalcProps> = ({
                 </PrimeReactFlex>
               
             </List.Item>
-            {/*
-            <List.Item style={{width: '100%'}}>
-              <QRCode text={'https://yandex.ru'} props={{
-                width:400,
-                margin: 2,
-                color: {
-                  dark: backgroundColor,
-                  light: accentTextColor
-                }
-                }}/>
-            </List.Item>
-            */}
-            <List.Item style={{width: '100%'}}>
-            </List.Item>
           </List>
           <MobPopup
+            key={'mobPopupQRCode'}
+            visible={popupQRVisible}
+            onMaskClick={() => setPopupQRVisible(false)}
+            onClose={() => setPopupQRVisible(false)}
+            bodyStyle={{
+              width: '100%',
+              backgroundColor: backgroundColor
+            }}
+            showCloseButton={true}
+          >
+            <MockContentWithQRCode/>
+          </MobPopup>
+          <MobPopup
+            key={'mobPopup'}
             visible={popupVisible}
             onMaskClick={() => setPopupVisible(false)}
             onClose={() => setPopupVisible(false)}
