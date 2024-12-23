@@ -1,22 +1,20 @@
 const development = false;
+const qrDebug = true;
 
 import * as packageJson from '../../../package.json';
 const version = packageJson.version;
 
 import React, { useEffect, useState, type FC } from 'react';
-import { QrCodeScan, Link45deg, Person, Briefcase } from 'react-bootstrap-icons';
+
+import { QrCodeScan, Link45deg, Person, Briefcase, Check, Dot } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 
 import { Section, List, Banner } from '@telegram-apps/telegram-ui';
-import { useLaunchParams, qrScanner, miniApp,
-  //themeParams
-} from '@telegram-apps/sdk-react';
-import { Button } from 'antd';
+import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
+import { Button, Steps } from 'antd';
 import { AutoCenter, Modal } from 'antd-mobile';
 
-import { Link, StartAppInfo, AppFeatures,
-  //DisplayData
-} from '@/components/';
+import { Link, StartAppInfo, AppFeatures } from '@/components/';
 
 import { Code, getOrderedParams, link2code, Param, prepareHash } from '@/components/Calc/functions';
 
@@ -24,13 +22,15 @@ import {
   accentTextColor,
   backgroundColor,
   buttonColor,
-  headerBgColor,
   hintColor,
   secondaryBgColor,
+  sectionSeparatorColor,
   textColor } from '@/components/init';
 
 import './IndexPage.css';
 import { botMethod } from '@/api/bot/methods';
+import { Step } from 'antd-mobile/es/components/steps/step';
+import { PrimeReactProvider } from 'primereact/api';
 
 const TCLR = import.meta.env.VITE_TXT_COLOR;
 
@@ -43,9 +43,6 @@ const AppHeader: FC = () => {
 
   const LP = useLaunchParams();
   const SP = LP.initData?.startParam;
-
-  //const [userId] = useState<string>(LP.initData?.user?.id.toString() || '');
-  //console.log('%cinitData: %o', `color: ${TCLR}`, LP.initData);
 
   const isMobile = LP.platform === 'android' || LP.platform === 'ios';
   const qrIsAvailable = miniApp.isMounted() && miniApp.isSupported() && qrScanner.isSupported();
@@ -94,12 +91,15 @@ const AppHeader: FC = () => {
 
   return (
     <Section
+      style={{ backgroundColor: secondaryBgColor }}
       //header={'Расчет государственной пошлины'}
-      header={<header style={{
-      color: accentTextColor,
-      backgroundColor: secondaryBgColor,
-      padding: '20px 24px 20px 22px'
-      }}>
+      header={
+        <header style={{
+          color: accentTextColor,
+          backgroundColor: secondaryBgColor,
+          padding: '20px 24px 20px 22px'
+        }}
+      >
         <h1
           style={{
             fontSize: '18px',
@@ -108,16 +108,36 @@ const AppHeader: FC = () => {
             fontWeight: 'var(--tgui--font_weight--accent2)'}}
           >Расчёт государственной пошлины</h1>
       </header>}
-      footer={'Налоговый кодекс РФ предусматривает разные варианты расчетов в завсимости от вида суда'}
+      //footer={'Налоговый кодекс РФ предусматривает разные варианты расчетов в завсимости от вида суда'}
+      footer={
+        <footer style={{
+          color: accentTextColor,
+          backgroundColor: secondaryBgColor,
+          padding: '20px 24px 4px 22px'
+        }}>
+          <h6
+            style={{
+              fontSize: '14px',
+              margin: '0px',
+              lineHeight: 'var(--tgui--subheadline2--line_height)',
+              fontWeight: 'var(--tgui--font_weight--accent3)'
+            }}
+          >
+            Налоговый кодекс РФ предусматривает разные варианты расчетов в зависимости от вида суда
+          </h6>
+        </footer>
+      }
     >
       {
-        isMobile && qrIsAvailable && <>
+        (isMobile || qrDebug) && (qrIsAvailable || qrDebug) && <>
           <Banner
             className='banner'
+            style={{
+              backgroundColor: backgroundColor,
+            }}
             before={<QrCodeScan size={30} style={{color: accentTextColor}}/>}
             header={<span style={{
               color: accentTextColor,
-              backgroundColor: headerBgColor,
               fontWeight: 'var(--tgui--font_weight--accent3)'
             }}>QR-код с расчётом</span>}
             description='Отсканируйте QR-код с расчетом пошлины'
@@ -185,6 +205,9 @@ const AppHeader: FC = () => {
               fontWeight: 'var(--tgui--font_weight--accent3)'
             }}>Расчет по ссылке</span>}
             className='banner'
+            style={{
+              backgroundColor: backgroundColor,
+            }}
             onCloseIcon={() => setBannerLinkHide(true)}
             type="section"
           >
@@ -224,66 +247,6 @@ const AppHeader: FC = () => {
 const modal = Modal;
 
 const Footer = () => {
-  const ID = useLaunchParams().initData;
-
-  const [userId] = useState<string>(ID?.user?.id.toString() || '');
-  console.log('%cinitData: %o', `color: ${TCLR}`, ID);
-
-  function handleClick() {
-    //https://api.telegram.org/bot${tg.token}/sendMessage?chat_id=${tg.chat_id}&text=${text}`
-    /*{
-      "status": "done",
-      "payload": {
-        "ok": true,
-        "result": {
-          "message_id": 24,
-          "from": {
-            "id": 7989859769,
-            "is_bot": true,
-            "first_name": "Калькулятор пошлины",
-            "username": "tgfee_bot"
-          },
-          "chat": {
-            "id": 275342303,
-            "first_name": "Алексей",
-            "last_name": "Кузнецов",
-            "username": "kuznetsov_proff",
-            "type": "private"
-          },
-          "date": 1733826984,
-          "text": "Калькулятор пошлины загружен."
-        }
-      }
-    }*/
-
-    const request = JSON.stringify({
-      chat_id: ID?.user?.id,
-      text: `Пользователь ${ID?.user?.firstName} ${ID?.user?.lastName} (${ID?.user?.username}) нажал на id: ${ID?.user?.id}.`
-    });
-
-    /*
-    fetchBot(
-      'sendMessage',
-      request,
-      (data) => {
-        console.log('%ccalcLoaded: %o', `color: ${TCLR}`, data);
-      },
-      (error) => {
-        console.log('%cerror: %o', `color: ${TCLR}`, error);
-      }
-    );*/
-    
-    botMethod(
-      'sendMessage',
-      request,
-    ).then((data) => {
-      console.log('%ccalcLoaded: %o', `color: ${TCLR}`, data);
-    }).catch((error) => {
-      console.log('%cerror: %o', `color: ${TCLR}`, error);
-    });
-  
-  }
-
   return (
     <>
       <footer style={{
@@ -299,34 +262,46 @@ const Footer = () => {
           <div>Расчёт размера государственной пошлины производится по новым правилам, начиная с 09.09.2024.</div>
         </h6>
       </footer>
-      <div style={{padding: '20px 24px 20px 24px', backgroundColor: backgroundColor, marginTop: '16px', fontSize: '12px'}}>
-        <AutoCenter style={{margin: '4px 4px', color: hintColor}}>
-          <Button
-            size='small'
-            style={{backgroundColor: backgroundColor, color: hintColor, fontSize: '10px'}}
-            onClick={()=>handleClick()}
-          >UId: {userId}</Button>
-        </AutoCenter>
-        <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Калькулятор пошлины</span></AutoCenter>
-        <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Версия {version}</span></AutoCenter>
-        <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>© 2024-2025</span></AutoCenter>
-        {/*<List>
-          <DisplayData
-            rows={
-              Object
-                .entries(themeParams.state())
-                .map(([title, value]) => ({
-                  title: title
-                    .replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)
-                    .replace(/background/, 'bg'),
-                  value,
-                }))
-            }
-          />
-        </List>*/}
-      </div>
     </>
   )
+}
+
+const CopyRight = () => {
+  const ID = useLaunchParams().initData;
+
+  const [userId] = useState<string>(ID?.user?.id.toString() || '');
+  console.log('%cinitData: %o', `color: ${TCLR}`, ID);
+
+  function handleClick() {
+    const request = JSON.stringify({
+      chat_id: import.meta.env.VITE_ADMIN_ID,
+      text: `Пользователь ${ID?.user?.firstName} ${ID?.user?.lastName} (${ID?.user?.username}) нажал на id: ${ID?.user?.id}.`
+    });
+    
+    botMethod(
+      'sendMessage',
+      request,
+    ).then((data) => {
+      console.log('%ccalcLoaded: %o', `color: ${TCLR}`, data);
+    }).catch((error) => {
+      console.log('%cerror: %o', `color: ${TCLR}`, error);
+    });
+  }
+
+  return (
+    <div style={{padding: '20px 24px 20px 24px', backgroundColor: secondaryBgColor, marginTop: '16px', fontSize: '12px'}}>
+      <AutoCenter style={{margin: '4px 4px', color: hintColor}}>
+        <Button
+          size='small'
+          style={{backgroundColor: secondaryBgColor, color: hintColor, fontSize: '10px'}}
+          onClick={()=>handleClick()}
+        >UId: {userId}</Button>
+      </AutoCenter>
+      <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Калькулятор пошлины</span></AutoCenter>
+      <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Версия {version}</span></AutoCenter>
+      <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>© 2024-2025</span></AutoCenter>
+    </div>
+  );
 }
 
 export const IndexPage: FC = () => {
@@ -341,7 +316,11 @@ export const IndexPage: FC = () => {
         >
           <Link to='/sou'>
             <Banner
-              before={<Person size={30}/>}
+              style={{
+                borderTop: `1px solid ${sectionSeparatorColor}`,//var(--tg-theme-section-separator-color)`,
+                backgroundColor: backgroundColor,
+              }}
+              before={<Person size={30} style={{color: accentTextColor}}/>}
               header={<span style={{
                 color: accentTextColor,
                 fontWeight: 'var(--tgui--font_weight--accent3)'
@@ -352,15 +331,63 @@ export const IndexPage: FC = () => {
           </Link>
           <Link to='/arb'>
             <Banner
-              before={<Briefcase size={30}/>}
+              before={<Briefcase size={30} style={{color: accentTextColor}}/>}
               header={<span style={{
                 color: accentTextColor,
                 fontWeight: 'var(--tgui--font_weight--accent3)'
               }}>Арбитражные суды</span>}
               className='banner'
+              style={{
+                backgroundColor: backgroundColor,
+              }}
               description='Статья 333.21 НК РФ'
             />
           </Link>
+        </Section>
+        <Section
+          footer={<CopyRight/>}
+        >
+          <Banner
+            header={
+              <span style={{
+                color: accentTextColor,
+                fontWeight: 'var(--tgui--font_weight--accent3)'
+              }}>
+                <PrimeReactProvider>
+                  <Steps
+                    direction='vertical'
+                    /*style={{
+                      '--title-font-size': '17px',
+                      '--description-font-size': '15px',
+                      '--indicator-margin-right': '12px',
+                      '--icon-size': '22px',
+                    } as React.CSSProperties}*/
+                  >
+                    <Step
+                      title='Process'
+                      status='process'
+                      icon={<Check size={20}/>}
+                    />
+                    <Step
+                      title='Process'
+                      status='process'
+                      icon={<Check size={20}/>}
+                    />
+                    <Step
+                      title={<span style={{color: accentTextColor}}>Wait</span>}
+                      status='wait'
+                      icon={<Dot style={{color: accentTextColor}} size={20}/>}
+                    />
+                  </Steps>
+                </PrimeReactProvider>
+              </span>
+            }
+            className='banner'
+            style={{
+              backgroundColor: backgroundColor,
+            }}
+          />
+          
         </Section>
         {development && <AppFeatures />}
         {development && <StartAppInfo />}
@@ -368,3 +395,43 @@ export const IndexPage: FC = () => {
     </>
   );
 };
+
+/*
+  .ant-steps
+  .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-tail::after {
+    background-color: rgb(65 147 236);
+}
+*/
+
+
+/*
+<div
+  class="tgui-a04b768cea14d789"
+>
+  <span
+    class="tgui-c3e2e598bd70eee6
+    tgui-080a44e6ac3f4d27
+    tgui-809f1f8a3f64154d
+    tgui-65c206f0fd891b6b
+    tgui-2646957e5c9379f3"
+  >
+    <span
+      style="
+        color: rgb(106, 178, 242);
+        font-weight: var(--tgui--font_weight--accent3);
+      "
+    >
+      <div
+        class="
+          ant-steps ant-steps-vertical
+          css-dev-only-do-not-override-1d3bjqn
+        "
+        style="
+          --title-font-size: 17px;
+          --description-font-size: 15px;
+          --indicator-margin-right: 12px;
+          --icon-size: 22px;
+        "
+      >
+        <div class="ant-steps-item ant-steps-item-process ant-steps-item-custom ant-steps-item-active"><div class="ant-steps-item-container"><div class="ant-steps-item-tail"></div><div class="ant-steps-item-icon"><span class="ant-steps-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" class="bi bi-check"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"></path></svg></span></div><div class="ant-steps-item-content"><div class="ant-steps-item-title">Process</div></div></div></div><div class="ant-steps-item ant-steps-item-process ant-steps-item-custom"><div class="ant-steps-item-container"><div class="ant-steps-item-tail"></div><div class="ant-steps-item-icon"><span class="ant-steps-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" class="bi bi-check"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"></path></svg></span></div><div class="ant-steps-item-content"><div class="ant-steps-item-title">Process</div></div></div></div><div class="ant-steps-item ant-steps-item-wait ant-steps-item-custom"><div class="ant-steps-item-container"><div class="ant-steps-item-tail"></div><div class="ant-steps-item-icon"><span class="ant-steps-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" class="bi bi-dot"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"></path></svg></span></div><div class="ant-steps-item-content"><div class="ant-steps-item-title">Wait</div></div></div></div></div></span></span></div>
+*/

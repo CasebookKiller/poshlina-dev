@@ -3,6 +3,18 @@ import { init, isTMA, miniApp, MiniAppHeaderColor, themeParams } from "@telegram
 
 console.log('%cИнициализация приложения...', `color: ${TCLR}`);
 
+export function isMobile() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (/mobile|android|iphone|ipad|ipod|windows phone/.test(userAgent)) {
+      return true;
+  } else {
+      return false;
+  }
+}
+
+export const MOBILE = true; //isMobile();
+console.log('%cMOBILE: %o', `color: ${TCLR}`, MOBILE);
+
 let isDark = false;
 const MA = miniApp; console.log('%cminiApp: %o', `color: ${TCLR}`, MA);
 const TP = themeParams; console.log('%cthemeParams: %o', `color: ${TCLR}`, TP);
@@ -16,20 +28,52 @@ try {
     console.log('%cerror: %o', `color: ${TCLR}`, error);
   });
   
-  if (MA.isSupported() && !MA.isMounted()) {
-    MA.mount();
-    isDark = MA.isDark(); console.log('%cDark Mode: ', `color: ${TCLR}`, isDark);
-  }
+  if (MA.isSupported() &&!MA.isMounted()) MA.mount();
+
+  isDark = MA.isDark(); console.log('%cDark Mode: ', `color: ${TCLR}`, isDark);
   
-  if (!MA.isCssVarsBound) MA.bindCssVars();
+  if (!MA.isCssVarsBound()) MA.bindCssVars();
 
   if (!TP.isMounted()) TP.mount();
-  if (!TP.isCssVarsBound) TP.bindCssVars();
+  if (!TP.isCssVarsBound()) TP.bindCssVars();
 
 } catch (error) {
   console.log('%cerror: %o', `color: ${TCLR}`, error);
 }
 
+export const accentTextColorHex = TP.accentTextColor(); console.log('%caccentTextColor: %o', `color: ${accentTextColorHex}`, accentTextColorHex);
+export const destructiveColorHex = TP.destructiveTextColor(); console.log('%cdestructiveColor: %o', `color: ${destructiveColorHex}`, destructiveColorHex);
+export const backgroundColorHex = TP.backgroundColor(); console.log('%cbackgroundColor: %o', `color: ${backgroundColorHex}`, backgroundColorHex);
+export const secondaryBgColorHex = TP.secondaryBackgroundColor(); console.log('%csecondaryBgColor: %o', `color: ${secondaryBgColorHex}`, secondaryBgColorHex);
+export const headerBgColorHex = TP.headerBackgroundColor(); console.log('%cheaderBgColor: %o', `color: ${headerBgColorHex}`, headerBgColorHex);
+export const textColorHex = TP.textColor(); console.log('%ctextColor: %o', `color: ${textColorHex}`, textColorHex);
+export const buttonColorHex = TP.buttonColor(); console.log('%cbuttonColor: %o', `color: ${buttonColorHex}`, buttonColorHex);
+export const buttonTextColorHex = TP.buttonTextColor(); console.log('%cbuttonTextColor: %o', `color: ${buttonTextColorHex}`, buttonTextColorHex);
+export const hintColorHex = TP.hintColor(); console.log('%chintColor: %o', `color: ${hintColorHex}`, hintColorHex);
+export const subtitleTextColorHex = TP.subtitleTextColor(); console.log('%csubtitleTextColor: %o', `color: ${subtitleTextColorHex}`, subtitleTextColorHex);
+export const linkColorHex = TP.linkColor(); console.log('%clinkColor: %o', `color: ${linkColorHex}`, linkColorHex);
+export const sectionHeaderTextColorHex = TP.sectionHeaderTextColor(); console.log('%csectionHeaderTextColor: %o', `color: ${sectionHeaderTextColorHex}`, sectionHeaderTextColorHex);
+export const sectionBgColorHex = TP.sectionBackgroundColor(); console.log('%csectionBgColor: %o', `color: ${sectionBgColorHex}`, sectionBgColorHex);
+export const sectionSeparatorColorHex = TP.sectionSeparatorColor(); console.log('%csectionSeparatorColor: %o', `color: ${sectionSeparatorColorHex}`, sectionSeparatorColorHex);
+export const buttonBarBgColorHex = TP.bottomBarBgColor(); console.log('%cbuttonBarBgColor: %o', `color: ${buttonBarBgColorHex}`, buttonBarBgColorHex);
+
+export const accentTextColor = MOBILE ? accentTextColorHex : 'var(--tg-theme-accent-text-color)';//TP ? TP.accentTextColor() : isDark ? '#69c2d0': '#1c93e3';//
+export const destructiveColor = MOBILE ? destructiveColorHex : 'var(--tg-theme-destructive-text-color)';//TP ? TP.destructiveTextColor() : isDark ? '#ee686f': '#cc2929';//
+export const backgroundColor = MOBILE ? backgroundColorHex : 'var(--tg-theme-bg-color)';//TP ? TP.backgroundColor() : isDark ? '#213035': '#ffffff';//
+export const secondaryBgColor = MOBILE ? secondaryBgColorHex : 'var(--tg-theme-secondary-bg-color)';//TP ? TP.secondaryBackgroundColor() : isDark ? '#152023': '#f0f0f0';//
+export const headerBgColor = MOBILE ? headerBgColorHex : 'var(--tg-theme-header-bg-color)';//TP ? TP.headerBackgroundColor() : isDark ? '#242f34': '#527da3';//
+export const textColor = MOBILE ? textColorHex : 'var(--tg-theme-text-color)';//TP ? TP.textColor() : isDark ? '#ffffff': '#222222';//
+export const buttonColor = MOBILE ? buttonColorHex : 'var(--tg-theme-button-color)';//TP ? TP.buttonColor() : isDark ? '#59bccd': '#50a8eb';//
+export const buttonTextColor = MOBILE ? buttonTextColorHex : 'var(--tg-theme-button-text-color)';//TP ? TP.buttonTextColor() : isDark ? '#ffffff': '#ffffff';//
+export const hintColor = MOBILE ? hintColorHex : 'var(--tg-theme-hint-color)';//TP ? TP.hintColor() : isDark ? '#7b8d92': '#a8a8a8';//
+export const subtitleTextColor = MOBILE ? subtitleTextColorHex : 'var(--tg-theme-subtitle-text-color)';//TP ? TP.subtitleTextColor() : isDark ? '#7b888a': '#82868a';//
+export const linkColor = MOBILE ? linkColorHex : 'var(--tg-theme-link-color)';//TP ? TP.linkColor() : isDark ? '#63b7c4': '#2678b6';//
+export const sectionHeaderTextColor = MOBILE ? sectionHeaderTextColorHex : 'var(--tg-theme-section-header-text-color)';//TP ? TP.sectionHeaderTextColor() : isDark ? '#7acedc': '#3a95d5';//
+export const sectionBgColor = MOBILE ? sectionBgColorHex : 'var(--tg-theme-section-bg-color)';//TP ? TP.sectionBackgroundColor() : isDark ? '#1d292e': '#ffffff';//
+export const sectionSeparatorColor = MOBILE ? sectionSeparatorColorHex : 'var(--tg-theme-section-separator-color)';//TP ? TP.sectionSeparatorColor() : isDark ? '#0d1316': '#d9d9d9';//
+export const buttonBarBgColor = MOBILE ? buttonBarBgColorHex : 'var(--tg-theme-button-bar-bg-color)';//TP ? TP.bottomBarBgColor() : isDark ? '#152023': '#f0f0f0';//
+
+/*
 export const accentTextColor = !isDark ? '#69c2d0': TP.accentTextColor();//
 export const destructiveColor = !isDark ? '#ee686f': TP.destructiveTextColor();//
 export const backgroundColor = !isDark ? '#213035': TP.backgroundColor();//
@@ -45,7 +89,7 @@ export const sectionHeaderTextColor = !isDark ? '#7acedc': TP.sectionHeaderTextC
 export const sectionBgColor = !isDark ? '#1d292e': TP.sectionBackgroundColor();//
 export const sectionSeparatorColor = !isDark ? '#0d1316': TP.sectionSeparatorColor();
 export const buttonBarBgColor = !isDark ? '#152023': TP.bottomBarBgColor();
-
+*/
 
 export const outlineColor = !isDark ? '#ffffff1a': '#ffffff1a';
 
@@ -85,75 +129,68 @@ if (MA.isMounted()) {
     MA.setBackgroundColor(bg);
     MA.setBottomBarColor(color);
 
-    // Замена переменных CSS для TGUI
-    const style = document.documentElement.style;
-    // выглядит не очень красиво, поскольку добавляются стили в свойство html style
-    // вероятно лучше переписать index css
-    style.setProperty('--tgui--bg_color','var(--tg-theme-bg-color,' + backgroundColor + ')');
-    style.setProperty('--tgui--text_color','var(--tg-theme-text-color,' + textColor + ')');
-    style.setProperty('--tgui--hint_color','var(--tg-theme-hint-color,' + hintColor + ')');
-    style.setProperty('--tgui--link_color','var(--tg-theme-link-color,' + linkColor + ')');
-    style.setProperty('--tgui--button_color','var(--tg-theme-button-color,' + buttonColor + ')');
-    style.setProperty('--tgui--button_text_color','var(--tg-theme-button-text-color,' + buttonTextColor + ')');
-    style.setProperty('--tgui--secondary_bg_color','var(--tg-theme-secondary-bg-color,' + secondaryBgColor + ')');
-    style.setProperty('--tgui--header_bg_color','var(--tg-theme-header-bg-color,' + headerBgColor + ')');
-    style.setProperty('--tgui--accent_text_color','var(--tg-theme-accent-text-color,' + accentTextColor + ')');
-    style.setProperty('--tgui--section_bg_color','var(--tg-theme-section-bg-color,' + sectionBgColor + ')');
-    style.setProperty('--tgui--section_header_text_color','var(--tg-theme-section-header-text-color,' + sectionHeaderTextColor + ')');
-    style.setProperty('--tgui--subtitle_text_color','var(--tg-theme-subtitle-text-color,' + subtitleTextColor + ')');
-    style.setProperty('--tgui--destructive_text_color','var(--tg-theme-destructive-text-color,' + destructiveColor + ')');
-    style.setProperty('--tgui--skeleton','#ffffff' + opacityCodes['3']);
-    style.setProperty('--tgui--divider','#ffffff' + opacityCodes['5']);
-    style.setProperty('--tgui--outline','#ffffff' + opacityCodes['10']);
-    style.setProperty('--tgui--surface_primary','#171717' + opacityCodes['95']);
-    style.setProperty('--tgui--tertiary_bg_color','#2a2a2a');
-    style.setProperty('--tgui--quartenary_bg_color','#2f2f2f');
-    style.setProperty('--tgui--segmented_control_active_bg','#2f2f2f');
-    style.setProperty('--tgui--card_bg_color','#242424');
-    style.setProperty('--tgui--secondary_hint_color','#78797e');
-    style.setProperty('--tgui--secondary_fill','#2990ff' + opacityCodes['15']);
-    style.setProperty('--tgui--green','#32e55e');
-    style.setProperty('--tgui--destructive_background','#ff2323' + opacityCodes['2']);
-    style.setProperty('--tgui--primary_code_highlight','#69c2d0');
-    style.setProperty('--tgui--secondary_code_highlight','#e937ed');
-    style.setProperty('--tgui--tertiary_code_highlight','#5ae536');
-    style.setProperty('--tgui--plain_background','#ffffff' + opacityCodes['8']);
-    style.setProperty('--tgui--plain_foreground','#ffffff' + opacityCodes['95']);
+    const bindCustomCss = true;
 
+    if (bindCustomCss) {
+      // Замена переменных CSS для TGUI
+      const style = document.documentElement.style;
+      // выглядит не очень красиво, поскольку добавляются стили в свойство html style
+      // вероятно лучше переписать index css
+      
+      console.log('%c--- style: %o', `color: ${TCLR}`, headerBgColor);
+
+      style.setProperty('--tg-theme-tertiary-bg-color', isDark ? sectionBgColorHex + opacityCodes['10'] : secondaryBgColor || '');
+      
+      const tguiBgColor = `var(--tg-theme-bg-color, ${backgroundColor})`; const tguiBgColorHex = backgroundColorHex || '';
+      const tguiTextColor = `var(--tg-theme-text-color, ${textColor})`; const tguiTextColorHex = textColorHex || '';
+      const tguiHintColor = `var(--tg-theme-hint-color, ${hintColor})`; const tguiHintColorHex = hintColorHex || '';
+      const tguiLinkColor = `var(--tg-theme-link-color, ${linkColor})`; const tguiLinkColorHex = linkColorHex || '';
+      const tguiButtonColor = `var(--tg-theme-button-color, ${buttonColor})`; const tguiButtonColorHex = buttonColorHex || '';
+      const tguiButtonTextColor = `var(--tg-theme-button-text-color, ${buttonTextColor})`; const tguiButtonTextColorHex = buttonTextColorHex || '';
+      const tguiSecondaryBgColor = `var(--tg-theme-secondary-bg-color, ${secondaryBgColor})`; const tguiSecondaryBgColorHex = secondaryBgColorHex || '';
+      const tguiHeaderBgColor = `var(--tg-theme-header-bg-color, ${headerBgColor})`; const tguiHeaderBgColorHex = headerBgColorHex || '';
+      const tguiAccentTextColor = `var(--tg-theme-accent-text-color, ${accentTextColor})`; const tguiAccentTextColorHex = accentTextColorHex || '';
+      const tguiSectionBgColor = `var(--tg-theme-section-bg-color, ${sectionBgColor})`; const tguiSectionBgColorHex = sectionBgColorHex || '';
+      const tguiSectionHeaderTextColor = `var(--tg-theme-section-header-text-color, ${sectionHeaderTextColor})`; const tguiSectionHeaderTextColorHex = sectionHeaderTextColorHex || '';
+      const tguiSubtitleTextColor = `var(--tg-theme-subtitle-text-color, ${subtitleTextColor})`; const tguiSubtitleTextColorHex = subtitleTextColorHex || '';
+      const tguiDestructiveTextColor = `var(--tg-theme-destructive-text-color, ${destructiveColor})`; const tguiDestructiveTextColorHex = destructiveColorHex || '';
+
+      style.setProperty('--tgui--bg_color', MOBILE ? tguiBgColorHex : tguiBgColor);
+      style.setProperty('--tgui--text_color', MOBILE ? tguiTextColorHex : tguiTextColor);
+      style.setProperty('--tgui--hint_color', MOBILE ? tguiHintColorHex : tguiHintColor);
+      style.setProperty('--tgui--link_color', MOBILE ? tguiLinkColorHex : tguiLinkColor);
+      style.setProperty('--tgui--button_color', MOBILE ? tguiButtonColorHex : tguiButtonColor);
+      style.setProperty('--tgui--button_text_color', MOBILE ? tguiButtonTextColorHex : tguiButtonTextColor);
+      style.setProperty('--tgui--secondary_bg_color', MOBILE ? tguiSecondaryBgColorHex : tguiSecondaryBgColor);
+      style.setProperty('--tgui--header_bg_color', MOBILE ? tguiHeaderBgColorHex : tguiHeaderBgColor);
+      style.setProperty('--tgui--accent_text_color', MOBILE ? tguiAccentTextColorHex : tguiAccentTextColor);
+      style.setProperty('--tgui--section_bg_color', MOBILE ? tguiSectionBgColorHex : tguiSectionBgColor);
+      style.setProperty('--tgui--section_header_text_color', MOBILE ? tguiSectionHeaderTextColorHex : tguiSectionHeaderTextColor);
+      style.setProperty('--tgui--subtitle_text_color', MOBILE ? tguiSubtitleTextColorHex : tguiSubtitleTextColor);
+      style.setProperty('--tgui--destructive_text_color', MOBILE ? tguiDestructiveTextColorHex : tguiDestructiveTextColor);
+
+      style.setProperty('--tgui--skeleton','#ffffff' + opacityCodes['3']);
+      style.setProperty('--tgui--divider','#ffffff' + opacityCodes['5']);
+      style.setProperty('--tgui--outline',outlineColor);
+      style.setProperty('--tgui--surface_primary','#171717' + opacityCodes['95']);
+      style.setProperty('--tgui--tertiary_bg_color', MOBILE ? tguiSecondaryBgColorHex : tguiSecondaryBgColor);
+      style.setProperty('--tgui--quartenary_bg_color','#2f2f2f');
+      style.setProperty('--tgui--segmented_control_active_bg','#2f2f2f');
+      style.setProperty('--tgui--card_bg_color','#242424');
+      style.setProperty('--tgui--secondary_hint_color','#78797e');
+      style.setProperty('--tgui--secondary_fill','#2990ff' + opacityCodes['15']);
+      style.setProperty('--tgui--green','#32e55e');
+      style.setProperty('--tgui--destructive_background','#ff2323' + opacityCodes['2']);
+      style.setProperty('--tgui--primary_code_highlight','#69c2d0');
+      style.setProperty('--tgui--secondary_code_highlight','#e937ed');
+      style.setProperty('--tgui--tertiary_code_highlight','#5ae536');
+      style.setProperty('--tgui--plain_background','#ffffff' + opacityCodes['8']);
+      style.setProperty('--tgui--plain_foreground','#ffffff' + opacityCodes['95']);
+      style.setProperty('--tgui--base--section--box_shadow','#000000' + opacityCodes['10']);
+
+      style.setProperty('--adm-color-border', outlineColor);
+      style.setProperty('--border-inner', 'solid 1px var(--adm-color-border)');
+
+    }
   }
 }
-
-
-/*
-  //--tgui--bg_color: var(--tg-theme-bg-color,#213035);
-  //--tgui--text_color: var(--tg-theme-text-color,#ffffff);
-  //--tgui--hint_color: var(--tg-theme-hint-color,#7b8d92);
-  //--tgui--link_color: var(--tg-theme-link-color,#63b7c4);
-  //--tgui--button_color: var(--tg-theme-button-color,#59bccd);
-  //--tgui--button_text_color: var(--tg-theme-button-text-color,#ffffff);
-  //--tgui--secondary_bg_color: var(--tg-theme-secondary-bg-color,#152023);
-  //--tgui--header_bg_color: var(--tg-theme-header-bg-color,#242f34);
-  //--tgui--accent_text_color: var(--tg-theme-accent-text-color,#69c2d0);
-  //--tgui--section_bg_color: var(--tg-theme-section-bg-color,#1d292e);
-  //--tgui--section_header_text_color: var(--tg-theme-section-header-text-color,#7acedc);
-  //--tgui--subtitle_text_color: var(--tg-theme-subtitle-text-color,#7b888a);
-  //--tgui--destructive_text_color: var(--tg-theme-destructive-text-color,#ee686f);
-    --tgui--skeleton: hsla(0,0%,100%,.03);
-    --tgui--divider: hsla(0,0%,100%,.05);
-    --tgui--outline: hsla(0,0%,100%,.1);
-    --tgui--surface_primary: hsla(0,0%,9%,.95);
-    --tgui--tertiary_bg_color: #2a2a2a;
-    --tgui--quartenary_bg_color: #2f2f2f;
-    --tgui--segmented_control_active_bg: #2f2f2f;
-    --tgui--card_bg_color: #242424;
-    --tgui--secondary_hint_color: #78797e;
-    --tgui--secondary_fill: rgba(41,144,255,.15);
-    --tgui--green: #32e55e;
-    --tgui--destructive_background: rgba(255,35,35,.02);
-    --tgui--primary_code_highlight: #69c2d0;
-    --tgui--secondary_code_highlight: #e937ed;
-    --tgui--tertiary_code_highlight: #5ae536;
-    --tgui--plain_background: hsla(0,0%,100%,.08);
-    --tgui--plain_foreground: hsla(0,0%,100%,.95);
-*/
-

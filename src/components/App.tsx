@@ -31,6 +31,7 @@ import { QRUrlPage } from '@/pages/QRUrlPage/QRUrlPage';
 import { NK333_21Page } from '@/pages/NK333_21Page/NK333_21Page';
 import { NK333_36Page } from '@/pages/NK333_36Page/NK333_36Page';
 import { NK333_37Page } from '@/pages/NK333_37Page/NK333_37Page';
+import { secondaryBgColor } from './init';
 //import { backgroundColor } from './ConfigProvider/variables';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
@@ -62,6 +63,7 @@ function BackButtonManipulator() {
     console.log('%chistory: %o', `color: ${txtColor}`, window.history.state);
     console.log(window.history.length);
     console.log('%clocation.pathname: %o', `color: ${txtColor}`, location.pathname);
+    console.log(window.location.hash);
     if (location.pathname === '/' || location.pathname === '/poshlina-dev/') {
       backButton.isVisible() && backButton.hide();
     } else {
@@ -76,14 +78,18 @@ export const App: FC = () => {
   const [code, setCode] = useState<Code>({} as Code);
 
   init(); console.log('%cinit: %o', `color: ${txtColor}`, miniApp);
+  const MA = miniApp;
+  if (!MA.isMounted()) MA.mount();
+
   const LP = useLaunchParams();
+  
   const SP = LP.initData?.startParam;
 
   // добавляем страницы
   const sou: AppRoute = { path: '/sou', element: <SouPage startParam= {''}/>, title: 'Суды общей юрисдикции' };
   const arb: AppRoute = { path: '/arb', element: <ArbPage startParam= {''}/>, title: 'Арбитражные суды' };
   
-  const nk333_19: AppRoute = { path: '/nk333_19', element: <NK333_19Page hash= {''}/>, title: 'Статья 333.19 НК РФ' };
+  const nk333_19: AppRoute = { path: '/nk333_19', element: <NK333_19Page/>, title: 'Статья 333.19 НК РФ' };
   const nk333_21: AppRoute = { path: '/nk333_21', element: <NK333_21Page hash= {''}/>, title: 'Статья 333.21 НК РФ' };
   const nk333_36: AppRoute = { path: '/nk333_36', element: <NK333_36Page hash= {''}/>, title: 'Статья 333.36 НК РФ' };
   const nk333_37: AppRoute = { path: '/nk333_37', element: <NK333_37Page hash= {''}/>, title: 'Статья 333.37 НК РФ' };
@@ -110,11 +116,11 @@ export const App: FC = () => {
     })
   }, []);
   
-  miniApp.mount();
+  //miniApp.mount();
 
-  themeParams.mount();
-  if (!themeParams.isCssVarsBound()) themeParams.bindCssVars();
-  console.log('%cThemeParams: %o', `color: ${txtColor}`, themeParams);
+  //themeParams.mount();
+  //if (!themeParams.isCssVarsBound()) themeParams.bindCssVars();
+  //console.log('%cThemeParams: %o', `color: ${txtColor}`, themeParams);
 
   if (!viewport.isMounted) viewport.mount();
   
@@ -129,9 +135,9 @@ export const App: FC = () => {
 
   return (
     <AppRoot
-      appearance={miniApp.isDark() ? 'dark' : 'light'}
+      appearance={MA.isDark() ? 'dark' : 'light'}
       platform={['macos', 'ios'].includes(LP.platform) ? 'ios' : 'base'}
-      style={{ }}
+      style={{backgroundColor: secondaryBgColor}}
     >
       <HashRouter>
         {/*<MainButtonManipulator/>*/}

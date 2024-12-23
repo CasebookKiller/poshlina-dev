@@ -45,7 +45,7 @@ export const QRUrlPage: FC<QRUrlPageProps> = (props) => {
   const [sum, setSum] = useState(qrsum);
   const [posh, setPosh] = useState(qrposh || '');
   
-  themeParams.mount();
+  //themeParams.mount();
 
   return (
     <>

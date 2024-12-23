@@ -7,6 +7,7 @@ import { type FC, type MouseEventHandler, useCallback } from 'react';
 import { Link as RouterLink, type LinkProps } from 'react-router-dom';
 
 import './Link.css';
+import { linkColor } from '../init';
 
 export const Link: FC<LinkProps> = ({
   className,
@@ -45,6 +46,9 @@ export const Link: FC<LinkProps> = ({
       {...rest}
       to={to}
       onClick={onClick}
+      style={{
+        color: linkColor
+      }}
       className={classNames(className, 'link')}
     />
   );

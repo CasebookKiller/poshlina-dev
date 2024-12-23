@@ -28,6 +28,7 @@
     "@xmldom/xmldom": "^0.9.5",
     "antd": "^5.22.2",
     "antd-mobile": "^5.38.1",
+    "antd-mobile-icons": "^0.3.0",
     "browser-image-tools": "file: ./node_modules/@liquid-js/qr-code-styling/tools",
     "dotenv": "^16.4.5",
     "eruda": "^3.4.0",

@@ -11,7 +11,7 @@ export let tokenTypographyConfig = {
   //colorErrorHover
   colorLink: linkColor,
   colorLinkActive: accentTextColor,
-  colorLinkHover: linkColor+'d8',
+  colorLinkHover: accentTextColor,//+'d8',
   //colorPrimaryBorder
   //colorSuccess
   //colorText

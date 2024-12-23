@@ -56,7 +56,7 @@ export const ArbPage: FC<ArbPageProps> = ( props ) => {
   const [sum, setSum] = useState(startsum);
   const [posh, setPosh] = useState(startposh || '');
   
-  themeParams.mount();
+  //themeParams.mount();
 
   return (
     <>

@@ -6,6 +6,8 @@ import {
   textColor,
   buttonColor,
   fontWeightAccent2,
+  buttonColorHex,
+  accentTextColor,
 } from "../init";
 
 export let tokenButtonConfig = {  
@@ -75,11 +77,11 @@ export let tokenButtonConfig = {
   //colorLinkActive: 'red',
   //colorLinkHover
   colorPrimary: buttonColor, //'#1677ff',
-  colorPrimaryActive: buttonColor+'bf',
+  colorPrimaryActive: buttonColorHex+'bf',
   //colorPrimaryBg
   //colorPrimaryBgHover
   //colorPrimaryBorder
-  colorPrimaryHover: buttonColor+'d8', //'#4096ff',
+  colorPrimaryHover: accentTextColor, //'#4096ff',
   //colorPrimaryTextActive
   //colorPrimaryTextHover
   //colorText

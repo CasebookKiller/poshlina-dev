@@ -8,7 +8,7 @@ export const ThemeParamsPage: FC = () => {
   console.log('ThemeParamsPage: ', window.location);
   console.log('history:', history);
 
-  themeParams.mount();
+  //themeParams.mount();
 
   return (
     <List>

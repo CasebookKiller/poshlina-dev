@@ -4,7 +4,7 @@ import {
   type FC, type ReactNode
 } from 'react';
 
-import { init, miniApp, openTelegramLink, popup, shareURL, viewport, useSignal, useLaunchParams } from '@telegram-apps/sdk-react';
+import { init, miniApp, openTelegramLink, popup, shareURL, viewport, useSignal, useLaunchParams, themeParams } from '@telegram-apps/sdk-react';
 
 import { PrimeReactProvider } from 'primereact/api';
 import { InputNumber } from 'primereact/inputnumber'; // https://primereact.org/inputnumber/
@@ -93,11 +93,13 @@ export const Calc: FC<CalcProps> = ({
 
   console.log('%cstartCalc: %o', `color: ${txtColor}`, startCalc);
   const MA = miniApp;
+  const TP = themeParams;
   console.log('%cminiApp: %o', `color: ${txtColor}`, MA);
   const VP = viewport;
   const PU = popup;
 
-  if (!MA.isCssVarsBound) MA.bindCssVars();
+  if (!MA.isCssVarsBound()) MA.bindCssVars();
+  if (!TP.isCssVarsBound()) TP.bindCssVars();
 
   const MAisMounted = useSignal(MA.isMounted);
   const VPisMounted = useSignal(VP.isMounted);
@@ -140,8 +142,8 @@ export const Calc: FC<CalcProps> = ({
     PUisOpened,
   ]);
 
-  init(); console.log('%cinit()',`color: ${txtColor}`);
-  MA.mount(); console.log('%cminiApp.mount(): %o', `color: ${txtColor}`, MA.isMounted());
+  //init(); console.log('%cinit()',`color: ${txtColor}`);
+  //MA.mount(); console.log('%cminiApp.mount(): %o', `color: ${txtColor}`, MA.isMounted());
   console.log('%cminiApp: %o', `color: ${txtColor}`, MA);
 
   function buttonsDisabled(state: boolean) {
@@ -283,8 +285,7 @@ export const Calc: FC<CalcProps> = ({
         }
       }
     }
-
-  },[benefitsSwitch, discount30Switch, discount50Switch]);
+  },[benefitsSwitch, discount30Switch, discount50Switch, sum]);
   
   const mockContentWithCloseIcon = (
     <>
@@ -359,43 +360,41 @@ export const Calc: FC<CalcProps> = ({
   }*/
 
   function QRCode_Styling({text}: {text: string}) {
-    const cardFront = 'Цвета приложения';
-    const cardBack = 'Чёрное на белом';
+    const cardFront = 'Чёрное на белом';
+    const cardBack = 'Белое на чёрном';
     const [isFlipped, setFlipped] = useState(false);
   
     const handleFlip = () => {
         setFlipped(!isFlipped);
     };
   
-    const qrCode = new QRCodeStyling({
+    const qrCodeWB = new QRCodeStyling({
       data: text,
       //image: "https://casebookkiller.github.io/poshlina-dev/Logo.svg",
-      shape: "square",
+      shape: 'square',
       dotsOptions: {
-        color: accentTextColor,
-        type: "random-dot",
+        color: 'white',
+        type: 'random-dot',
         size: 18,
       },
       cornersSquareOptions: {
-        color: accentTextColor,
-        type: "extra-rounded"
+        color: 'white',
+        type: 'extra-rounded'
       },
       cornersDotOptions: {
-        color: accentTextColor,
-        type: "extra-rounded"
+        color: 'white',
+        type: 'extra-rounded'
       },
       backgroundOptions: {
-        color: backgroundColor,
+        color: 'black',//'rgba(0,0,0,0)',//backgroundColor,
         margin: 1
       },
       imageOptions: {
-        crossOrigin: "anonymous",
+        crossOrigin: 'anonymous',
         margin: 1,
         imageSize: 0.5
       }
     });
-
-    
 
     const qrCodeBW = new QRCodeStyling({
       data: text,
@@ -426,32 +425,28 @@ export const Calc: FC<CalcProps> = ({
     });
   
     useEffect(() => {
-      console.log('%cQRCode: %o', `color: ${txtColor}`, qrCode);
+      console.log('%cQRCode: %o', `color: ${txtColor}`, qrCodeWB);
       console.log('%cQRCodeBW: %o', `color: ${txtColor}`, qrCodeBW);
      
       function getSize(qrCode: QRCodeStyling) {
         return {width: qrCode.size?.width, height: qrCode.size?.height};
       }
   
-      const size = getSize(qrCode);
+      const size = getSize(qrCodeWB);
       console.log(size);
 
       const sizebw = getSize(qrCodeBW);
       console.log(sizebw);
-
-
       
-      // в цветах темы    
-
-      qrCode.serialize().then((code) => {
+      // белое на чёрном 
+      qrCodeWB.serialize().then((code) => {
         if (code !== undefined) {
           let dataURL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(code);
           
-          let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+          let canvas: HTMLCanvasElement = document.getElementById('canvaswb') as HTMLCanvasElement;
           
           canvas.width = size.width || 0;
           canvas.height = size.height || 0;
-
           
           let ctx:any;
           if (canvas?.getContext) {
@@ -476,12 +471,10 @@ export const Calc: FC<CalcProps> = ({
           });
   
           _img.src = dataURL;
-
-
         }
       });
 
-      qrCode.append(document.getElementById('canvas') as HTMLCanvasElement);
+      //qrCodeWB.append(document.getElementById('canvaswb') as HTMLCanvasElement);
       // черное на белом
       qrCodeBW.serialize().then((code) => {
         if (code !== undefined) {
@@ -514,10 +507,8 @@ export const Calc: FC<CalcProps> = ({
           });
   
           _img.src = dataURL;
-          
         }
       });
-
     }, []);
     
     return (
@@ -547,22 +538,6 @@ export const Calc: FC<CalcProps> = ({
                       >
                         {cardFront}
                         <div className='placeholder'>
-                          <canvas ref={refCanvas} className="square" id='canvas' style={{
-                            display:'block',
-                            padding: 0,
-                            maxWidth: '234px',
-                            maxHeight: '234px',
-                          }}/>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flip-card-back">
-                      <div
-                        className="card-content"
-                        onClick={handleFlip}
-                      >
-                        {cardBack}
-                        <div className='placeholder'>
                           <canvas ref={refCanvasBW} className="square" id='canvasbw' style={{
                             display:'block',
                             padding: 0,
@@ -572,6 +547,29 @@ export const Calc: FC<CalcProps> = ({
                         </div>
                       </div>
                     </div>
+
+                    <div className='flip-card-back'>
+                      <div
+                        className='card-content'
+                        onClick={handleFlip}
+                      >
+                        {cardBack}
+                        <div className='placeholder'>
+                          <canvas
+                            ref={refCanvas}
+                            className='square'
+                            id='canvaswb'
+                            style={{
+                              display:'block',
+                              padding: 0,
+                              maxWidth: '234px',
+                              maxHeight: '234px',
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
                 <MobAutoCenter style={{margin: '20px 0px 0px 0px', width: '100%'}}>
@@ -582,9 +580,9 @@ export const Calc: FC<CalcProps> = ({
                       onClick={() => {
                         let canvas: HTMLCanvasElement;
                         if (isFlipped) {
-                          canvas = document.getElementById('canvasbw') as HTMLCanvasElement;
+                          canvas = document.getElementById('canvaswb') as HTMLCanvasElement;
                         } else {
-                          canvas = document.getElementById('canvas') as HTMLCanvasElement;
+                          canvas = document.getElementById('canvasbw') as HTMLCanvasElement;
                         }
                         
                         canvas.toBlob((blob) => {
@@ -768,7 +766,6 @@ export const Calc: FC<CalcProps> = ({
                           setDiscount50Sum(0);
                           setStep(0);
                           buttonsDisabled(true);
-                          
                         } else {
                           setPosh(human((Number(gosp||0)).toFixed(0)));
                           setDiscount30Sum(discount30Sum);
@@ -780,7 +777,6 @@ export const Calc: FC<CalcProps> = ({
                             buttonsDisabled(false);
                           }
                         }
-                        
                         
                         console.log('%c=== sum: %o', `color: ${txtColor}`, sum);
                       }
@@ -842,13 +838,13 @@ export const Calc: FC<CalcProps> = ({
               className={'hoverable'}
             >
               <List.Item.Meta
-                title={<Text type={'success'}>Льгота {courtType === 'obsh' ? '-25 000': '-55 000'} р.</Text>}
+                title={<Text style={{color: accentTextColor}}>Льгота {courtType === 'obsh' ? '-25 000': '-55 000'} р.</Text>}
                 description={
                 courtType === 'obsh' ?
                 <>
                   <Text style={{color: hintColor}} className='unselectable'>
                     <Link
-                      to='/nk333_36'
+                      to='/nk333_36#p2s333_36'
                       tabIndex={-1}
                     >
                       Льготные категории
@@ -859,7 +855,7 @@ export const Calc: FC<CalcProps> = ({
                 <>
                   <Text style={{color: hintColor}} className='unselectable'>
                     <Link
-                      to='/nk333_37'
+                      to='/nk333_37#p2s333_37'
                       tabIndex={-1}
                     >
                       Льготные категории
@@ -888,12 +884,12 @@ export const Calc: FC<CalcProps> = ({
                   className={'hoverable'}
                 >
                   <List.Item.Meta
-                    title={<Text type={'success'}>Скидка в 30%</Text>}
+                    title={<Text style={{color: accentTextColor}}>Скидка в 30%</Text>}
                     description={
                       <>
                         <Text style={{color: hintColor}} className='unselectable'>
                           <Link
-                            to='/nk333_19'
+                            to='/nk333_19#pp10p1s333_19'
                             tabIndex={-1}
                           >
                             Ситуации
@@ -902,6 +898,7 @@ export const Calc: FC<CalcProps> = ({
                       </>}  
                   />
                   <Switch
+                    
                     checked={discount30Switch}
                     tabIndex={-1}
                   />
@@ -922,12 +919,12 @@ export const Calc: FC<CalcProps> = ({
                   className={'hoverable'}
                 >
                   <List.Item.Meta
-                    title={<Text type={'success'}>Скидка в 30%</Text>}
+                    title={<Text style={{color: accentTextColor}}>Скидка в 30%</Text>}
                     description={
                       <>
                         <Text style={{color: hintColor}} className='unselectable'>
                           <Link
-                            to='/nk333_21'
+                            to='/nk333_21#pp13p1s333_21'
                             tabIndex={-1}
                           >
                             Ситуации
@@ -953,12 +950,12 @@ export const Calc: FC<CalcProps> = ({
                   className={'hoverable'}
                 >
                   <List.Item.Meta
-                    title={<Text type={'success'}>Скидка в 50%</Text>}
+                    title={<Text style={{color: accentTextColor}}>Скидка в 50%</Text>}
                     description={
                       <>
                         <Text style={{color: hintColor}} className='unselectable'>
                           <Link
-                            to='/nk333_21'
+                            to='/nk333_21#pp9p1s333_21'
                             tabIndex={-1}
                           >
                             Ситуации
@@ -976,7 +973,7 @@ export const Calc: FC<CalcProps> = ({
             
             <List.Item>
               <List.Item.Meta
-                title={<Text type={'success'}>Расчёт пошлины</Text>}
+                title={<Text style={{color: accentTextColor}}>Расчёт пошлины</Text>}
                 description={
                   <>
                     <Text 
@@ -1031,7 +1028,7 @@ export const Calc: FC<CalcProps> = ({
                       <></>
                     }
                     <Text
-                      type='success'
+                      style={{color: accentTextColor}}
                       className='unselectable'
                     >
                       Сумма пошлины: { 

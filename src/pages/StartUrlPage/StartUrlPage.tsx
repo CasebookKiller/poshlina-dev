@@ -45,7 +45,7 @@ export const StartUrlPage: FC<StartUrlPageProps> = (props) => {
   const [sum, setSum] = useState(startsum);
   const [posh, setPosh] = useState(startposh || '');
   
-  themeParams.mount();
+  //themeParams.mount();
 
   return (
     <>

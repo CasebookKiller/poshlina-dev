@@ -1,8 +1,15 @@
 .link {
   text-decoration: none;
-  color: var(--tg-theme-link-color);
+  /*color: var(--tg-theme-link-color);*/
 }
 
+.banner {
+  background-color: var(--tg-theme-bg-color);
+}
 .banner:hover {
-  background-color: var(--tgui--tertiary_bg_color);
+  background-color: var(--tg-theme-tertiary-bg-color)!important;
+}
+
+.ant-steps .ant-steps-item-process.ant-steps-item-custom .ant-steps-item-icon >.ant-steps-icon {
+  color: var(--tg-theme-accent-text-color)!important;
 }

@@ -1,4 +1,4 @@
-import { buttonColor } from "../init";
+import { accentTextColor, buttonColor } from "../init";
 // ant-switch css-dev-only-do-not-override-1tqhbax
 // ant-switch css-dev-only-do-not-override-1tqhbax ant-switch-checked
 
@@ -21,7 +21,7 @@ export let tokenSwitchConfig = {
   //// Global
   colorPrimary: buttonColor,
   colorPrimaryBorder: buttonColor,
-  colorPrimaryHover: buttonColor+'d8',
+  colorPrimaryHover: accentTextColor, //accentTextColorHex+'d8',
   //colorText
   //colorTextLightSolid
   //colorTextQuaternary

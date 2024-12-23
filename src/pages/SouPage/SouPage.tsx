@@ -7,7 +7,7 @@ import { App } from "antd";
 import { themeParams, /*useLaunchParams*/ } from "@telegram-apps/sdk-react";
 import { calcPosh, Code, getCode } from "@/components/Calc/functions";
 import { Link } from "@/components";
-import { hintColor } from "@/components/init";
+import { accentTextColor, hintColor } from "@/components/init";
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;
 
@@ -55,14 +55,14 @@ export const SouPage: FC<SouPageProps> = (props) => {
   const [sum, setSum] = useState(startsum);
   const [posh, setPosh] = useState(startposh.gosp || '');
   
-  themeParams.mount();
+  //themeParams.mount();
 
   return (
     <>
     <div className="contentWrapper">
       <App>
         <Calc 
-          header={<>Размер государственной пошлины<br/>при обращении в суды общей юрисдикции</>}
+          header={<div style={{color: accentTextColor}}>Размер государственной пошлины<br/>при обращении в суды общей юрисдикции</div>}
           footer={<div style={{color: hintColor}}>Расчёт размера государственной пошлины производится в соответствии со <Link to='/nk333_19'>статьей 333.19 НК РФ</Link>.</div>}
           sum={sum}
           posh={String(posh)}

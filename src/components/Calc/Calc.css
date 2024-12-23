@@ -52,17 +52,17 @@
 }
 
 .flip-card-front {
-  background-color: var(--tg-theme-background-color);
-  color: var(--tg-theme-accent-text-color);
-  border-color: var(--tg-theme-accent-text-color);
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #000000;
 }
 
 .flip-card-back {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
   transform: rotateY(180deg);
   height: 100%;
-  border-color: #000000;
+  border-color: #ffffff;
 }
 
 .card-content {
@@ -107,4 +107,10 @@
   touch-action: manipulation;
   background-color: var(--tg-theme-button-color);
   color: var(--tg-theme-button-text-color);
+}
+
+span.p-inputnumber {
+  background-color: var(--tg-theme-bg-color);
+  border-width: 2px!important;
+  border-radius: 16px;
 }
