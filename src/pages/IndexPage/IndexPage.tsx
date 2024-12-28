@@ -1,18 +1,19 @@
 const development = false;
-const qrDebug = true;
+const qrDebug = false;
+const socialDebug = false;
 
 import * as packageJson from '../../../package.json';
 const version = packageJson.version;
 
 import React, { useEffect, useState, type FC } from 'react';
 
-import { QrCodeScan, Link45deg, Person, Briefcase, Check, Dot } from 'react-bootstrap-icons';
+import { QrCodeScan, Link45deg, Person, Briefcase } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 
 import { Section, List, Banner } from '@telegram-apps/telegram-ui';
 import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
-import { Button, Steps } from 'antd';
-import { AutoCenter, Modal } from 'antd-mobile';
+import { Button } from 'antd';
+import { AutoCenter, Modal, Button as MobButton } from 'antd-mobile';
 
 import { Link, StartAppInfo, AppFeatures } from '@/components/';
 
@@ -29,8 +30,9 @@ import {
 
 import './IndexPage.css';
 import { botMethod } from '@/api/bot/methods';
-import { Step } from 'antd-mobile/es/components/steps/step';
 import { PrimeReactProvider } from 'primereact/api';
+import { Timeline } from 'primereact/timeline';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 const TCLR = import.meta.env.VITE_TXT_COLOR;
 
@@ -304,7 +306,51 @@ const CopyRight = () => {
   );
 }
 
+interface AppTask {
+  id: number;
+  title: string;
+  description?: string;
+  status?: string;
+  checking?: boolean;
+}
+
+/*
+setPerson({
+  ...person, // Copy the old fields
+  firstName: e.target.value // But override this one
+});
+*/
 export const IndexPage: FC = () => {
+
+  const [tasks, /*setTasks*/] = useState<AppTask[]>([
+    {
+      id: 1,
+      title: 'TON Wallet',
+      status: 'active',
+      checking: true,
+    },
+    {
+      id: 2,
+      title: 'casebook{killer} channel',
+      status: 'active'
+    },
+    {
+      id: 3,
+      title: 'Шаг 3',
+      status: 'active'
+    },
+    {
+      id: 4,
+      title: 'Шаг 4',
+      status: 'active'
+    },
+    {
+      id: 5,
+      title: 'Шаг 5',
+      status: 'active'
+    }
+  ]);
+
   console.log('%cIndexPage: %o', `color: ${TCLR}`, window.location);
   console.log('%chistory: %o', `color: ${TCLR}`, history);
   return (
@@ -347,6 +393,7 @@ export const IndexPage: FC = () => {
         <Section
           footer={<CopyRight/>}
         >
+          {socialDebug && 
           <Banner
             header={
               <span style={{
@@ -354,31 +401,22 @@ export const IndexPage: FC = () => {
                 fontWeight: 'var(--tgui--font_weight--accent3)'
               }}>
                 <PrimeReactProvider>
-                  <Steps
-                    direction='vertical'
-                    /*style={{
-                      '--title-font-size': '17px',
-                      '--description-font-size': '15px',
-                      '--indicator-margin-right': '12px',
-                      '--icon-size': '22px',
-                    } as React.CSSProperties}*/
-                  >
-                    <Step
-                      title='Process'
-                      status='process'
-                      icon={<Check size={20}/>}
-                    />
-                    <Step
-                      title='Process'
-                      status='process'
-                      icon={<Check size={20}/>}
-                    />
-                    <Step
-                      title={<span style={{color: accentTextColor}}>Wait</span>}
-                      status='wait'
-                      icon={<Dot style={{color: accentTextColor}} size={20}/>}
-                    />
-                  </Steps>
+                  <Timeline align={'left'} value={tasks} content={(item) => {
+                    return (
+                      <MobButton
+                        color={'primary'}  
+                        onClick={() => {
+                          console.log('%citem: %o', `color: ${TCLR}`, item);
+                        }}
+                        fill={'outline'}
+                      >
+                        {item.title}
+                        {item.checking && <ProgressSpinner style={{marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem'}} strokeWidth="4" fill="var(--surface-ground)" animationDuration=".5s"/>}
+                      </MobButton>
+                    );
+                  }}>
+
+                  </Timeline>
                 </PrimeReactProvider>
               </span>
             }
@@ -386,7 +424,7 @@ export const IndexPage: FC = () => {
             style={{
               backgroundColor: backgroundColor,
             }}
-          />
+          />}
           
         </Section>
         {development && <AppFeatures />}

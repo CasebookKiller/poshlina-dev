@@ -2,7 +2,6 @@ import {
   backButton,
   useLaunchParams,
   miniApp,
-  themeParams,
   viewport,
   init,
 } from '@telegram-apps/sdk-react';

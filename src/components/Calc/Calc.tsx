@@ -4,7 +4,7 @@ import {
   type FC, type ReactNode
 } from 'react';
 
-import { init, miniApp, openTelegramLink, popup, shareURL, viewport, useSignal, useLaunchParams, themeParams } from '@telegram-apps/sdk-react';
+import { miniApp, openTelegramLink, popup, shareURL, viewport, useSignal, useLaunchParams, themeParams } from '@telegram-apps/sdk-react';
 
 import { PrimeReactProvider } from 'primereact/api';
 import { InputNumber } from 'primereact/inputnumber'; // https://primereact.org/inputnumber/

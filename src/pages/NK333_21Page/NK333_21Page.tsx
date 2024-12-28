@@ -1,10 +1,17 @@
-import { FC, useEffect, useRef } from "react";
-import { ConfigProvider, List } from "antd-mobile"
-
-import './NK333_21Page.css'
 import * as articleJson from './NK333_21Page.json';
 
+import { FC, useEffect, useRef } from "react";
+import { ConfigProvider } from "antd-mobile"
+
+import { List } from "antd";
+
 import ruRU from "antd-mobile/es/locales/ru-RU";
+import { backgroundColor, outlineColor, textColor, } from "@/components/init";
+import { PrimeReactProvider } from "primereact/api";
+
+import { Typography } from "antd";
+const { Title, Text } = Typography;
+
 interface NK333_21PageProps {
   hash?: string
   editionDate?: string
@@ -16,7 +23,7 @@ interface ItemContentProps {
 }
 const ItemContent: FC<ItemContentProps> = (props: ItemContentProps) => {
   console.log('props.id', props?.id);
-  return (<div id={props?.id || ''} className='list-item-content'>{props.children}</div>);
+  return (<div id={props?.id || ''} style={{color: textColor}}className='list-item-content'>{props.children}</div>);
 };
 
 interface ItemContentPrefixProps {
@@ -45,10 +52,15 @@ export const NK333_21Page: FC<NK333_21PageProps> = ( props ) => {
   const listItems = article.map((item, index)=>{
     return (
       <div key={index} id={item?.id||''} ref={el=>refs.current[index]=el!}>
-        <List.Item prefix={<ItemContentPrefix>{item?.prx||''}</ItemContentPrefix>}>
-          <ItemContent>
-            {item.text}
-          </ItemContent>
+        <List.Item
+          style={{borderTop: '2px solid ' + outlineColor }}
+        >
+          <List.Item.Meta
+            avatar={<ItemContentPrefix>{item?.prx||''}</ItemContentPrefix>}
+            description={<ItemContent>
+              {item.text}
+            </ItemContent>}
+          />
         </List.Item>
       </div>
     );
@@ -65,13 +77,28 @@ export const NK333_21Page: FC<NK333_21PageProps> = ( props ) => {
 
   return (
     <>
-      <ConfigProvider locale={ruRU}>
-        <List
-          className='list'
-          header={<h5 ref={hdr} className='listHeader'>{articleJson.title}</h5>}>
-          {listItems}
-        </List>
-      </ConfigProvider>
+    <PrimeReactProvider value={{unstyled: false}}>
+        <ConfigProvider
+          locale={ruRU}
+        >
+          <List
+            header={
+              <Title
+                level={5}
+                className='listHeader'>
+                <Text
+                  type='success'
+                >
+                  {articleJson.title}
+                </Text>
+              </Title>
+            }
+            style={{background: backgroundColor}}
+          >
+            {listItems}
+          </List>
+        </ConfigProvider>
+      </PrimeReactProvider>
     </>
   );
 }

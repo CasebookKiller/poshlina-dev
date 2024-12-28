@@ -4,7 +4,7 @@ import { Calc } from "@/components/Calc/Calc";
 
 import './QRUrlPage.css'
 import { App } from "antd";
-import { themeParams } from "@telegram-apps/sdk-react";
+//import { themeParams } from "@telegram-apps/sdk-react";
 import { calcPosh, Code, getCode } from "@/components/Calc/functions";
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;

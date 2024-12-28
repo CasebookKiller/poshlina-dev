@@ -4,7 +4,7 @@ import { Calc } from "@/components/Calc/Calc";
 
 import './ArbPage.css'
 import { App } from "antd";
-import { themeParams, /*useLaunchParams*/ } from "@telegram-apps/sdk-react";
+//import { themeParams, /*useLaunchParams*/ } from "@telegram-apps/sdk-react";
 import { calcPosh, Code, getCode } from "@/components/Calc/functions";
 import { Link } from "@/components";
 import { hintColor } from "@/components/init";
