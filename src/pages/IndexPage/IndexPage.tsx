@@ -1,19 +1,19 @@
 const development = false;
 const qrDebug = false;
-const socialDebug = false;
+const socialDebug = true;
 
 import * as packageJson from '../../../package.json';
 const version = packageJson.version;
 
-import React, { useEffect, useState, type FC } from 'react';
+import React, { useEffect, useRef, useState, type FC } from 'react';
 
-import { QrCodeScan, Link45deg, Person, Briefcase } from 'react-bootstrap-icons';
+import { QrCodeScan, Link45deg, Person, Briefcase, ChevronRight, Check2, ExclamationLg as Exclamation } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 
 import { Section, List, Banner } from '@telegram-apps/telegram-ui';
-import { useLaunchParams, qrScanner, miniApp } from '@telegram-apps/sdk-react';
+import { useLaunchParams, qrScanner, miniApp, openTelegramLink } from '@telegram-apps/sdk-react';
 import { Button } from 'antd';
-import { AutoCenter, Modal, Button as MobButton } from 'antd-mobile';
+import { AutoCenter, Modal, Button as MobButton, ButtonRef } from 'antd-mobile';
 
 import { Link, StartAppInfo, AppFeatures } from '@/components/';
 
@@ -33,6 +33,7 @@ import { botMethod } from '@/api/bot/methods';
 import { PrimeReactProvider } from 'primereact/api';
 import { Timeline } from 'primereact/timeline';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { PrimeReactFlex } from '@/components/Calc/Calc';
 
 const TCLR = import.meta.env.VITE_TXT_COLOR;
 
@@ -311,7 +312,8 @@ interface AppTask {
   title: string;
   description?: string;
   status?: string;
-  checking?: boolean;
+  after?: string;
+  cb?: () => string;
 }
 
 /*
@@ -321,35 +323,132 @@ setPerson({
 });
 */
 export const IndexPage: FC = () => {
+  const LP = useLaunchParams();
+  const ID = LP.initData;
 
-  const [tasks, /*setTasks*/] = useState<AppTask[]>([
-    {
+  const refs = useRef<ButtonRef[]>([]);
+  
+  const [tasks, setTasks] = useState<AppTask[]>([
+    /*{
       id: 1,
       title: 'TON Wallet',
-      status: 'active',
-      checking: true,
-    },
+      status: 'active', // disabled
+      after: 'waiting', // 'waiting', 'success', 'error', 'checking'
+      cb: () => {
+        console.log('%cTON Wallet', `color: pink`);
+        return 'error';
+      }
+    },*/
     {
       id: 2,
-      title: 'casebook{killer} channel',
-      status: 'active'
-    },
+      title: 'Подписка на новости',
+      status: 'active',
+      after: 'waiting',
+      cb: () => {
+        //window.open('https://t.me/casebookkiller', '_blank');
+        console.log('%ccasebook{killer} channel', `color: pink`);
+        let formData = new FormData();
+        formData.append('chat_id', '-1002212964660');
+        formData.append('user_id', ID?.user?.id.toString() || '');
+        botMethod(
+          'getChatMember',
+          formData
+        ).then((result: any) => {
+          console.log(result);
+          console.log(result.payload?.result?.status);
+          if (result.payload?.result?.status === 'member') {
+            setAfter(2, 'success');
+            //if (openTelegramLink.isAvailable()) {
+            //  openTelegramLink('https://t.me/'+import.meta.env.VITE_CHANNEL_NAME);
+            //}
+          } else {
+            setAfter(2, 'waiting');
+            if (openTelegramLink.isAvailable()) {
+              openTelegramLink('https://t.me/'+import.meta.env.VITE_CHANNEL_NAME);
+            }
+          }
+        }).catch((error) => {
+          console.log(error);
+          setAfter(2, 'error');
+        })
+        return 'checking';
+      }
+    }/*,
     {
       id: 3,
       title: 'Шаг 3',
-      status: 'active'
+      status: 'active',
+      after: 'waiting'
     },
     {
       id: 4,
       title: 'Шаг 4',
-      status: 'active'
+      status: 'active',
+      after: 'waiting'
     },
     {
       id: 5,
       title: 'Шаг 5',
-      status: 'active'
-    }
+      status: 'active',
+      after: 'waiting'
+    }*/
   ]);
+
+/*
+import React, { useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
+
+import "./styles.css";
+
+const App = () => {
+  const ref = useRef(null);
+
+  const myfunc = () => {
+    console.log("I was activated 5 seconds later");
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      ref.current.click();
+    }, 5000); //miliseconds
+  }, []);
+  return (
+    <button ref={ref} onClick={myfunc}>
+      TEST
+    </button>
+  );
+};
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
+
+*/
+
+  useEffect(() => {
+    updateTasks();
+  }, [])
+
+  function updateTasks() {
+    setTasks((tasks) => {
+      return tasks.map((task) => {
+        return {...task, after: checkTask(task)};
+      });
+    });
+  }
+
+  function checkTask(task: AppTask) {
+    console.log('%cid: %o', `color: ${TCLR}`, task.id);
+    const status = task.cb ? task.cb(): 'waiting';
+    
+    return status; //'waiting', 'success', 'error', 'checking'
+  }
+
+  function setAfter(id: number, after: string) {
+    setTasks((tasks) => {
+      return tasks.map((task) => task.id === id ? {...task, after} : task);
+    });
+  }
 
   console.log('%cIndexPage: %o', `color: ${TCLR}`, window.location);
   console.log('%chistory: %o', `color: ${TCLR}`, history);
@@ -404,14 +503,45 @@ export const IndexPage: FC = () => {
                   <Timeline align={'left'} value={tasks} content={(item) => {
                     return (
                       <MobButton
+                        ref={el=>refs.current[item.id]=el!}
                         color={'primary'}  
                         onClick={() => {
                           console.log('%citem: %o', `color: ${TCLR}`, item);
+                          //setTasks(tasks.map((task) => {
+                          //  return {...task, after: checkTask(task.id)};
+                          //}));
+                    
+                          setTasks(tasks.map((task) => {
+                            if (task.id === item.id) {
+                              //if (task.cb) task.cb();
+                              return {
+                                ...task,
+                                after: 'checking'
+                              };
+                            }
+                            return task;
+                          }));
+                          console.log('%citem.id: %o','color: yellow', item.id);
+                          setTasks(tasks.map((task) => {
+                            if (task.id === item.id) {
+                              //if (task.cb) task.cb();
+                              return {...task, after: checkTask(task)};
+                            }
+                            return task;
+                          }));
                         }}
                         fill={'outline'}
+                        style={{width: '100%'}}
                       >
-                        {item.title}
-                        {item.checking && <ProgressSpinner style={{marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem'}} strokeWidth="4" fill="var(--surface-ground)" animationDuration=".5s"/>}
+                        <PrimeReactFlex>
+                          <div style={{width: '80%', textAlign: 'left'}}>{item.title}</div>
+                          <div style={{width: '20%', textAlign: 'right'}}>
+                            {item.after === 'waiting' && <ChevronRight style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-accent-text-color)'}} strokeWidth="2" fill="var(--tg-theme-accent-text-color)"/>}
+                            {item.after === 'checking' && <ProgressSpinner style={{marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem'}} strokeWidth="4" fill="var(--surface-ground)" animationDuration=".5s"/>}
+                            {item.after === 'success' && <Check2 style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-accent-text-color)'}} strokeWidth="2" fill="var(--tg-theme-accent-text-color)"/>}
+                            {item.after === 'error' && <Exclamation style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-destructive-text-color)'}} strokeWidth="1"/>}
+                          </div>
+                        </PrimeReactFlex>
                       </MobButton>
                     );
                   }}>
