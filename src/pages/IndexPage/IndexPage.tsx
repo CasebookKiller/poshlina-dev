@@ -67,12 +67,13 @@ const AppHeader: FC = () => {
   let orderedParams: Param[] = [];
   const arr: string[] = SP?.split(/clc|bro/) ?? [];
   orderedParams = getOrderedParams(SP ?? '', arr) ?? [];
-
+  
   useEffect(() => {
     sessionStorage.setItem('bannerLinkHide', bannerLinkHide.toString());
   }, [bannerLinkHide]);
 
   useEffect(() => {
+    
     orderedParams.forEach((item) => {
       if (item.name === 'clc') {
         let _code = link2code(prepareHash(item.value)); 

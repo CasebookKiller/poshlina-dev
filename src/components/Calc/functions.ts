@@ -577,7 +577,8 @@ export function getCode(SP: string) {
     ];
 
     let orderedParams: Param[] = [];
-
+    let params: Param[] = [];
+    
     const arr: string[] = SP?.split(/clc|bro/) ?? [];
     
     if (arr.length < 2) return;  
@@ -590,7 +591,10 @@ export function getCode(SP: string) {
 
     orderedParams = unOrderedParams.sort( compareProps );
     orderedParams.forEach((item) => {
-      item.value = arr[orderedParams.findIndex(x => x.name === item.name)+1];  
+      if (item.index !== -1) params.push(item);
+    })
+    params.forEach((item) => {
+      item.value = arr[params.findIndex(x => x.name === item.name)+1];  
     });
 
     console.log('%cOrdered Params: %o', `color: ${txtColor}`, orderedParams);
@@ -609,28 +613,48 @@ export function getCode(SP: string) {
 
 
 export function getOrderedParams(SP: string, arr: string[]) {
-  //console.log('%carr: %o', `color: ${txtColor}`, arr);
+  console.log('%cSP: %o', `color: white; background-color: blue`, SP);
+  console.log('%carr: %o', `color: white; background-color: blue`, arr);
   let orderedParams: Param[] = [];
+  let params: Param[] = [];
 
   const unOrderedParams: Param[] = [
-    { name: 'clc', index: 0, value: '' },
-    { name: 'bro', index: 0, value: '' }
+    { name: 'clc', index: -1, value: '' },
+    { name: 'bro', index: -1, value: '' }
   ];
       
   if (arr.length < 2 && arr.length !== 0) return;  
   if (arr.length !== 0) {
     unOrderedParams.forEach((item) => {
+      console.log('%citem: %o', `color: ${txtColor}`, item);
       if (SP?.includes(item.name)) {
-        item.index = SP.indexOf(item.name);
+        const index = SP.indexOf(item.name);
+        
+        if (item.name === 'bro') {
+          item.index = index;
+        }
+
+        if (item.name === 'clc') {
+          item.index = index;
+        }
+        console.log('%citem.name: %o', `color: ${txtColor}`, item.name);
+        console.log('%citem.index: %o', `color: ${txtColor}`, item.index);
       }
     });
+    console.log('%cunOrderedParams: %o', `color: ${txtColor}`, unOrderedParams);
     orderedParams = unOrderedParams.sort( compareProps );
+    
     orderedParams.forEach((item) => {
-      item.value = arr[orderedParams.findIndex(x => x.name === item.name)+1];  
+      if (item.index !== -1) params.push(item);
+    })
+    params.forEach((item) => {
+      console.log('%citem: %o', `color: ${txtColor}`, item);
+      console.log('%carr: %o', `color: ${txtColor}`, arr);
+      item.value = arr[params.findIndex(x => x.name === item.name)+1];  
     });
 
-    console.log('%cOrdered Params: %o', `color: ${txtColor}`, orderedParams);
+    console.log('%cParams: %o', `color: ${txtColor}`, params);
   }
 
-return (orderedParams);
+return (params);
 }
