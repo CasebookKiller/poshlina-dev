@@ -6,6 +6,7 @@
 .banner {
   background-color: var(--tg-theme-bg-color);
 }
+
 .banner:hover {
   background-color: var(--tg-theme-tertiary-bg-color)!important;
 }
@@ -76,6 +77,12 @@
 
 .adm-button-primary {
   --color: var(--tg-theme-accent-text-color);
+}
+
+.adm-button-default.adm-button-fill-outline {
+  --text-color: var(--tg-theme-accent-color);
+  --border-color: var(--tg-theme-accent-text-color);
+  --background-color: transparent;
 }
 
 .adm-button:not(.adm-button-default).adm-button-fill-outline {

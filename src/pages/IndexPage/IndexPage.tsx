@@ -9,17 +9,16 @@ const idsDebug = false;
 /**
  * Код версии
  */
-
 import * as packageJson from '../../../package.json';
 const version = packageJson.version;
 
 import React, { createContext, ReactNode, useContext, useEffect, useRef, useState, type FC } from 'react';
 
-import { QrCodeScan, Link45deg, Person, Briefcase, ChevronRight, Check2, ExclamationLg as Exclamation } from 'react-bootstrap-icons';
+import { QrCodeScan, Link45deg, Person, Briefcase, ChevronRight, Check2, Share, ExclamationLg as Exclamation } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 
 import { Section, List, Banner } from '@telegram-apps/telegram-ui';
-import { useLaunchParams, qrScanner, miniApp, openTelegramLink } from '@telegram-apps/sdk-react';
+import { useLaunchParams, qrScanner, miniApp, openTelegramLink, shareURL } from '@telegram-apps/sdk-react';
 import { Button } from 'antd';
 import { AutoCenter, Modal, Button as MobButton, ButtonRef } from 'antd-mobile';
 
@@ -358,7 +357,7 @@ export const IndexPage: FC = () => {
       id: 1,
       title: 'TON Wallet',
       status: 'active', // disabled
-      after: 'waiting', // 'waiting', 'success', 'error', 'checking'
+      after: 'waiting', // 'waiting', 'success', 'error', 'checking', 'share'
       cb: () => {
         console.log('%cTON Wallet', `color: pink`);
         return 'error';
@@ -398,6 +397,22 @@ export const IndexPage: FC = () => {
           setAfter(2, 'error');
         })
         return 'checking';
+      }
+    },
+    {
+      id: 3,
+      title: 'Поделиться',
+      marker: DefaultMarker,
+      status: 'active',
+      after: 'share',
+      cb: () => {
+        const applink = 'https://t.me/' + import.meta.env.VITE_BOT_NAME + '/' + import.meta.env.VITE_APP_NAME + '?startapp=';
+        const userid = ID?.user?.id.toString() || '';
+        const bro = userid != '' ? 'bro' + userid : '';
+        const url = applink + bro;
+        const msg = `Приложение для расчета пошлины при обращении в арбитражные суды и суды общей юрисдикции: ${url}`;
+        shareURL(msg);
+        return 'share';
       }
     }
   ]);
@@ -556,7 +571,7 @@ export const IndexPage: FC = () => {
                     return (
                       <MobButton
                         ref={el=>refs.current[item.id]=el!}
-                        color={'primary'}  
+                        color={item.status === 'active' ? 'default' : 'primary'}  
                         onClick={() => {
                           console.log('%citem: %o', `color: ${TCLR}`, item);
                           //setTasks(tasks.map((task) => {
@@ -593,6 +608,7 @@ export const IndexPage: FC = () => {
                             {item.after === 'checking' && <ProgressSpinner style={{marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem'}} strokeWidth="4" fill="var(--surface-ground)" animationDuration=".5s"/>}
                             {item.after === 'success' && <Check2 style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-hint-color)'}} strokeWidth="2" fill="var(--tg-theme-accent-text-color)"/>}
                             {item.after === 'error' && <Exclamation style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-destructive-text-color)'}} strokeWidth="1"/>}
+                            {item.after === 'share' && <Share style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-accent-text-color)'}} strokeWidth="1"/>}
                           </div>
                         </PrimeReactFlex>
                       </MobButton>

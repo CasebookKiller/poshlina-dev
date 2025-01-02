@@ -1,7 +1,7 @@
 {
   "name": "poshlina-dev",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "homepage": "https://casebookkiller.github.io/poshlina-dev",
   "scripts": {
