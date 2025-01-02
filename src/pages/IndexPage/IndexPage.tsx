@@ -1,11 +1,19 @@
+/**
+ * Настройки режима отладки
+ */
 const development = false;
 const qrDebug = false;
 const socialDebug = true;
+const idsDebug = false;
+
+/**
+ * Код версии
+ */
 
 import * as packageJson from '../../../package.json';
 const version = packageJson.version;
 
-import React, { useEffect, useRef, useState, type FC } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useRef, useState, type FC } from 'react';
 
 import { QrCodeScan, Link45deg, Person, Briefcase, ChevronRight, Check2, ExclamationLg as Exclamation } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
@@ -83,7 +91,7 @@ const AppHeader: FC = () => {
         setLink('/starturl');
         setSum(_sum);
       }
-    })
+    });
   },[])
 
   const subtitle = <>
@@ -303,6 +311,7 @@ const CopyRight = () => {
       <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Калькулятор пошлины</span></AutoCenter>
       <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Версия {version}</span></AutoCenter>
       <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>© 2024-2025</span></AutoCenter>
+      
     </div>
   );
 }
@@ -311,6 +320,7 @@ interface AppTask {
   id: number;
   title: string;
   description?: string;
+  marker?: ReactNode;
   status?: string;
   after?: string;
   cb?: () => string;
@@ -322,12 +332,27 @@ setPerson({
   firstName: e.target.value // But override this one
 });
 */
+
+import Supabase from '../../supabaseClient';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
+const SBaseContext = createContext(Supabase);
+
+interface TGID {
+  created_at: string; id: number; tgbro: string | null; tgid: string;
+}
 export const IndexPage: FC = () => {
+  const SBase = useContext(SBaseContext); 
+  
+  const [ids, setIds] = useState<TGID[]>();
+  
   const LP = useLaunchParams();
   const ID = LP.initData;
-
+  const SP = ID?.startParam;
   const refs = useRef<ButtonRef[]>([]);
   
+  const DefaultMarker = <div className="p-timeline-event-marker" data-pc-section="marker"/>;
+  const DisabledMarker = <div className="p-timeline-event-marker-disabled" data-pc-section="marker"/>;
+
   const [tasks, setTasks] = useState<AppTask[]>([
     /*{
       id: 1,
@@ -341,11 +366,11 @@ export const IndexPage: FC = () => {
     },*/
     {
       id: 2,
-      title: 'Подписка на новости',
+      title: 'Подписаться на новости',
+      marker: DefaultMarker,
       status: 'active',
       after: 'waiting',
       cb: () => {
-        //window.open('https://t.me/casebookkiller', '_blank');
         console.log('%ccasebook{killer} channel', `color: pink`);
         let formData = new FormData();
         formData.append('chat_id', '-1002212964660');
@@ -358,11 +383,12 @@ export const IndexPage: FC = () => {
           console.log(result.payload?.result?.status);
           if (result.payload?.result?.status === 'member') {
             setAfter(2, 'success');
-            //if (openTelegramLink.isAvailable()) {
-            //  openTelegramLink('https://t.me/'+import.meta.env.VITE_CHANNEL_NAME);
-            //}
+            setDisabled(2);
+            setMarker(2,'disabled');
           } else {
+            setActive(2);
             setAfter(2, 'waiting');
+            setMarker(2,'active');
             if (openTelegramLink.isAvailable()) {
               openTelegramLink('https://t.me/'+import.meta.env.VITE_CHANNEL_NAME);
             }
@@ -373,61 +399,75 @@ export const IndexPage: FC = () => {
         })
         return 'checking';
       }
-    }/*,
-    {
-      id: 3,
-      title: 'Шаг 3',
-      status: 'active',
-      after: 'waiting'
-    },
-    {
-      id: 4,
-      title: 'Шаг 4',
-      status: 'active',
-      after: 'waiting'
-    },
-    {
-      id: 5,
-      title: 'Шаг 5',
-      status: 'active',
-      after: 'waiting'
-    }*/
+    }
   ]);
+  
+  async function getIds() {
+    const result: PostgrestSingleResponse<TGID[]> = await SBase.from("ids").select();
+    console.log('%cids: %o', `color: firebrick; background-color: white`, result.data);  
+    setIds(result.data||[]);
+  }
 
-/*
-import React, { useRef, useEffect } from "react";
-import ReactDOM from "react-dom";
+  async function checkTGId(tgid: string) {
+    const result: PostgrestSingleResponse<TGID[]> = await SBase.from("ids").select().eq('tgid', tgid);
+    console.log('%cid: %o', `color: firebrick; background-color: white`, result.data);  
+    return result.data;
+  }
 
-import "./styles.css";
-
-const App = () => {
-  const ref = useRef(null);
-
-  const myfunc = () => {
-    console.log("I was activated 5 seconds later");
-  };
+  async function addTGId(tgid: string) {
+    const result = await SBase
+      .from('ids')
+      .insert([
+        { tgid: tgid },
+      ])
+      .select();
+      console.log('%cid: %o', `color: firebrick; background-color: white`, result.status);
+    return result.data;
+  }
+  async function addTGIdWithBro(tgid: string, tgbro: string) {
+    const result = await SBase
+      .from('ids')
+      .insert([
+        { tgid: tgid, tgbro: tgbro },
+      ])
+      .select();
+      console.log('%cid: %o', `color: firebrick; background-color: white`, result.status);
+    return result.data;
+  }
 
   useEffect(() => {
-    setTimeout(() => {
-      ref.current.click();
-    }, 5000); //miliseconds
-  }, []);
-  return (
-    <button ref={ref} onClick={myfunc}>
-      TEST
-    </button>
-  );
-};
+    let bro: string = '';
+    const orderedParams: Param[] = getOrderedParams(SP ?? '', SP?.split(/clc|bro/) ?? []) ?? [];
+    orderedParams.forEach((item) => {
+      if (item.name === 'bro') bro = item.value;
+    });
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
-
-
-*/
-
-  useEffect(() => {
     updateTasks();
-  }, [])
+    getIds();
+    console.log('%cID: %o', `color: lightgreen`, ID);
+    if (ID?.user?.id) {
+      checkTGId(ID?.user?.id.toString()).then((result) => {
+        if (result?.length) {
+          console.log('%cid: %o', `color: yellow`, result);  
+        } else {
+          if (bro !== '') {
+            addTGIdWithBro(ID?.user?.id.toString() || '', bro || '').then((result) => {
+              console.log('%cid: %o', `color: yellow`, result);  
+            });
+          } else {
+            console.log('%cid: %o', `color: yellow`, 'no bro');
+            addTGId(ID?.user?.id.toString() || '').then((result) => {
+              console.log('%cid: %o', `color: yellow`, result);  
+            });
+          }
+        }
+      });
+      
+    }
+
+    
+    
+  }, []);
 
   function updateTasks() {
     setTasks((tasks) => {
@@ -444,10 +484,21 @@ ReactDOM.render(<App />, rootElement);
     return status; //'waiting', 'success', 'error', 'checking'
   }
 
+  function setActive(id: number) {
+    setTasks((tasks) => tasks.map((task) => task.id === id ? {...task, status: 'active'} : task));
+  }
+
+  function setMarker(id: number, status: string) {
+    if (status === 'active') setTasks((tasks) => tasks.map((task) => task.id === id ? {...task, marker: DefaultMarker} : task));
+    if (status === 'disabled') setTasks((tasks) => tasks.map((task) => task.id === id ? {...task, marker: DisabledMarker} : task));
+  }
+
+  function setDisabled(id: number) {
+    setTasks((tasks) => tasks.map((task) => task.id === id ? {...task, status: 'disabled'} : task));
+  }
+
   function setAfter(id: number, after: string) {
-    setTasks((tasks) => {
-      return tasks.map((task) => task.id === id ? {...task, after} : task);
-    });
+    setTasks((tasks) => tasks.map((task) => task.id === id ? {...task, after} : task));
   }
 
   console.log('%cIndexPage: %o', `color: ${TCLR}`, window.location);
@@ -500,7 +551,8 @@ ReactDOM.render(<App />, rootElement);
                 fontWeight: 'var(--tgui--font_weight--accent3)'
               }}>
                 <PrimeReactProvider>
-                  <Timeline align={'left'} value={tasks} content={(item) => {
+                  <Timeline align={'left'} value={tasks} marker={(item) => item.marker} content={(item) => {
+                    console.log('%citem: %o', `color: ${TCLR}`, item);
                     return (
                       <MobButton
                         ref={el=>refs.current[item.id]=el!}
@@ -532,13 +584,14 @@ ReactDOM.render(<App />, rootElement);
                         }}
                         fill={'outline'}
                         style={{width: '100%'}}
+                        disabled={item.status === 'disabled'}
                       >
                         <PrimeReactFlex>
                           <div style={{width: '80%', textAlign: 'left'}}>{item.title}</div>
                           <div style={{width: '20%', textAlign: 'right'}}>
                             {item.after === 'waiting' && <ChevronRight style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-accent-text-color)'}} strokeWidth="2" fill="var(--tg-theme-accent-text-color)"/>}
                             {item.after === 'checking' && <ProgressSpinner style={{marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem'}} strokeWidth="4" fill="var(--surface-ground)" animationDuration=".5s"/>}
-                            {item.after === 'success' && <Check2 style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-accent-text-color)'}} strokeWidth="2" fill="var(--tg-theme-accent-text-color)"/>}
+                            {item.after === 'success' && <Check2 style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-hint-color)'}} strokeWidth="2" fill="var(--tg-theme-accent-text-color)"/>}
                             {item.after === 'error' && <Exclamation style={{position: 'relative', marginLeft: '0.5rem', top: '0.2rem', width: '1rem', height: '1rem', stroke: 'var(--tg-theme-destructive-text-color)'}} strokeWidth="1"/>}
                           </div>
                         </PrimeReactFlex>
@@ -560,46 +613,21 @@ ReactDOM.render(<App />, rootElement);
         {development && <AppFeatures />}
         {development && <StartAppInfo />}
       </List>
+      {idsDebug && ids && ids.map((id, index) => {
+        return (
+          <Link key={index} to={`/id/${id.tgid}`}>
+            <Banner
+              style={{
+                borderTop: `1px solid ${sectionSeparatorColor}`,//var(--tg-theme-section-separator-color)`,
+                backgroundColor: backgroundColor,
+              }}
+              before={<Person size={30} style={{color: accentTextColor}}/>}
+              className='banner'
+              description={id.tgid}
+            />
+          </Link>
+        );
+      })}
     </>
   );
 };
-
-/*
-  .ant-steps
-  .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-tail::after {
-    background-color: rgb(65 147 236);
-}
-*/
-
-
-/*
-<div
-  class="tgui-a04b768cea14d789"
->
-  <span
-    class="tgui-c3e2e598bd70eee6
-    tgui-080a44e6ac3f4d27
-    tgui-809f1f8a3f64154d
-    tgui-65c206f0fd891b6b
-    tgui-2646957e5c9379f3"
-  >
-    <span
-      style="
-        color: rgb(106, 178, 242);
-        font-weight: var(--tgui--font_weight--accent3);
-      "
-    >
-      <div
-        class="
-          ant-steps ant-steps-vertical
-          css-dev-only-do-not-override-1d3bjqn
-        "
-        style="
-          --title-font-size: 17px;
-          --description-font-size: 15px;
-          --indicator-margin-right: 12px;
-          --icon-size: 22px;
-        "
-      >
-        <div class="ant-steps-item ant-steps-item-process ant-steps-item-custom ant-steps-item-active"><div class="ant-steps-item-container"><div class="ant-steps-item-tail"></div><div class="ant-steps-item-icon"><span class="ant-steps-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" class="bi bi-check"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"></path></svg></span></div><div class="ant-steps-item-content"><div class="ant-steps-item-title">Process</div></div></div></div><div class="ant-steps-item ant-steps-item-process ant-steps-item-custom"><div class="ant-steps-item-container"><div class="ant-steps-item-tail"></div><div class="ant-steps-item-icon"><span class="ant-steps-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" class="bi bi-check"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"></path></svg></span></div><div class="ant-steps-item-content"><div class="ant-steps-item-title">Process</div></div></div></div><div class="ant-steps-item ant-steps-item-wait ant-steps-item-custom"><div class="ant-steps-item-container"><div class="ant-steps-item-tail"></div><div class="ant-steps-item-icon"><span class="ant-steps-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" class="bi bi-dot"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"></path></svg></span></div><div class="ant-steps-item-content"><div class="ant-steps-item-title">Wait</div></div></div></div></div></span></span></div>
-*/

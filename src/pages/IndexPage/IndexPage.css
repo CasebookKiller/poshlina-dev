@@ -41,6 +41,16 @@
 
 .p-timeline-event-marker {
   border: 2px solid var(--tg-theme-accent-text-color);
+  background-color: transparent;
+}
+
+.p-timeline-event-marker-disabled {
+  border: 2px solid var(--tg-theme-hint-color);
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  background-color: transparent;
+  opacity: 0.4;
 }
 
 .p-progress-spinner-svg {
@@ -69,6 +79,7 @@
 }
 
 .adm-button:not(.adm-button-default).adm-button-fill-outline {
-  --text-color: var(--tg-theme-accent-text-color);
+  --text-color: var(--tg-theme-hint-color);
+  --border-color: var(--tg-theme-hint-color);
   --background-color: transparent;
 }

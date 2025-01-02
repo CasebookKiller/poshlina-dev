@@ -8,7 +8,7 @@ import {
 
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
-import { startTransition, useEffect, useState, type FC} from 'react';
+import { startTransition, /*createContext, useContext,*/ useEffect, useState, type FC} from 'react';
 
 import {
   HashRouter,
@@ -30,7 +30,7 @@ import { QRUrlPage } from '@/pages/QRUrlPage/QRUrlPage';
 import { NK333_21Page } from '@/pages/NK333_21Page/NK333_21Page';
 import { NK333_36Page } from '@/pages/NK333_36Page/NK333_36Page';
 import { NK333_37Page } from '@/pages/NK333_37Page/NK333_37Page';
-import { secondaryBgColor } from './init';
+import { secondaryBgColor, /*TCLR*/ } from './init';
 //import { backgroundColor } from './ConfigProvider/variables';
 
 const txtColor = import.meta.env.VITE_TXT_COLOR;

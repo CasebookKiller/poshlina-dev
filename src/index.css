@@ -387,6 +387,10 @@ div.ant-typography-h5>textarea,
   box-shadow: none;
 }
 
+.adm-button:not(.adm-button-default).adm-button-fill-outline {
+  --text-color: var(--tg-theme-hint-color);
+  --background-color: transparent;
+}
 
 .ant-switch {
   border: 0px solid var(--tg-theme-hint-color);
