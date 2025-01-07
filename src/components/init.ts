@@ -6,13 +6,13 @@ console.log('%cИнициализация приложения...', `color: ${TC
 export function isMobile() {
   const userAgent = navigator.userAgent.toLowerCase();
   if (/mobile|android|iphone|ipad|ipod|windows phone/.test(userAgent)) {
-      return true;
+    return true;
   } else {
-      return false;
+    return false;
   }
 }
 
-export const MOBILE = true; //isMobile();
+export const MOBILE = isMobile();
 console.log('%cMOBILE: %o', `color: ${TCLR}`, MOBILE);
 
 let isDark = false;
@@ -38,7 +38,8 @@ try {
   if (!TP.isCssVarsBound()) TP.bindCssVars();
 
 } catch (error) {
-  console.log('%cerror: %o', `color: ${TCLR}`, error);
+  console.log('%cОшибка инициализации приложения: %o', `color: ${TCLR}`, error);
+  document.getElementById('root')!.remove();
 }
 
 export const accentTextColorHex = TP.accentTextColor(); console.log('%caccentTextColor: %o', `color: ${accentTextColorHex}`, accentTextColorHex);

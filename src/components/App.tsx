@@ -8,7 +8,7 @@ import {
 
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
-import { startTransition, /*createContext, useContext,*/ useEffect, useState, type FC} from 'react';
+import { startTransition, useEffect, useState, type FC} from 'react';
 
 import {
   HashRouter,

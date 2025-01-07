@@ -3,6 +3,14 @@ html {
   background: var(--tg-theme-secondary-bg-color);
 }
 
+.visilbe {
+  display: block;
+}
+
+.invisible {
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --default-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -519,6 +527,10 @@ input.p-inputtext:focus {
   border-color: var(--tg-theme-accent-text-color);
 }
 
+.p-timeline .p-timeline-event-connector {
+  background-color: var(--tg-theme-hint-color);
+  opacity: 0.4;
+}
 /* custom */
 /*
     --tgui--bg_color: var(--tg-theme-bg-color,#212121);

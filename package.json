@@ -25,9 +25,9 @@
     "@telegram-apps/telegram-ui": "^2.1.8",
     "@tonconnect/ui-react": "^2.0.9",
     "@types/react": "^18.3.14",
-    "@types/react-dom": "^19.0.1",
+    "@types/react-dom": "^18.3.1",
     "@xmldom/xmldom": "^0.9.5",
-    "antd": "^5.22.2",
+    "antd": "^5.23.0",
     "antd-mobile": "^5.38.1",
     "antd-mobile-icons": "^0.3.0",
     "browser-image-tools": "file: ./node_modules/@liquid-js/qr-code-styling/tools",
@@ -35,13 +35,14 @@
     "eruda": "^3.4.0",
     "file-type": "^19.6.0",
     "generate-react-cli": "^8.4.9",
+    "primeflex": "^3.3.1",
+    "primeicons": "^7.0.0",
     "primereact": "^10.8.4",
     "react": "^18.3.1",
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.3.1",
     "sharp": "^0.33.5",
-    "telegramsjs": "^4.6.0",
-    "vite": "^6.0.3"
+    "telegramsjs": "^4.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
@@ -63,9 +64,10 @@
     "globals": "^15.10.0",
     "qrcode": "^1.5.4",
     "react-router-dom": "^7.0.2",
-    "supabase": "^2.1.1",
+    "supabase": "^2.2.1",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0",
+    "vite": "^6.0.7",
     "vite-tsconfig-paths": "^5.0.1"
   }
 }

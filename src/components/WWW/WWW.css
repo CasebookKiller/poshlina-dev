@@ -1,0 +1,22 @@
+body {
+  /*background: var(--surface-0);*/
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.without-telegram {
+  display: block;
+}
+
+.p-panel .p-panel-header {
+  border: 1px solid #e5e7eb;
+  padding: 1.25rem;
+  background: #f9fafb;
+  color: #374151;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+}
