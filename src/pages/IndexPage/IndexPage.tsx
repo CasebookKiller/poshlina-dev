@@ -372,9 +372,10 @@ export const IndexPage: FC = () => {
       after: 'waiting',
       cb: () => {
         console.log('%ccasebook{killer} channel', `color: pink`);
+        let userId = ID?.user?.id.toString() || '';
         let formData = new FormData();
         formData.append('chat_id', '-1002212964660');
-        formData.append('user_id', ID?.user?.id.toString() || '');
+        formData.append('user_id', userId);
         botMethod(
           'getChatMember',
           formData
