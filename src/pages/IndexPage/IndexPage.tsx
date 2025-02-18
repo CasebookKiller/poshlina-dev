@@ -281,6 +281,7 @@ const CopyRight = () => {
   const ID = useLaunchParams().initData;
 
   const [userId] = useState<string>(ID?.user?.id.toString() || '');
+  const [username] = useState<string>(ID?.user?.username || '');
   console.log('%cinitData: %o', `color: ${TCLR}`, ID);
 
   function handleClick() {
@@ -308,6 +309,7 @@ const CopyRight = () => {
           onClick={()=>handleClick()}
         >UId: {userId}</Button>
       </AutoCenter>
+      <AutoCenter style ={{margin: '4px 4px', color: hintColor}}><span>Пользователь: {username}</span></AutoCenter>
       <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Калькулятор пошлины</span></AutoCenter>
       <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>Версия {version}</span></AutoCenter>
       <AutoCenter style={{margin: '4px 4px', color: hintColor}}><span>© 2024-2025</span></AutoCenter>
@@ -338,7 +340,7 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 const SBaseContext = createContext(Supabase);
 
 interface TGID {
-  created_at: string; id: number; tgbro: string | null; tgid: string;
+  created_at: string; id: number; tgbro: string | null; tgid: string; username: string | null;
 }
 export const IndexPage: FC = () => {
   const SBase = useContext(SBaseContext); 
@@ -373,6 +375,7 @@ export const IndexPage: FC = () => {
       cb: () => {
         console.log('%ccasebook{killer} channel', `color: pink`);
         let userId = ID?.user?.id.toString() || '';
+        
         let formData = new FormData();
         formData.append('chat_id', '-1002212964660');
         formData.append('user_id', userId);
@@ -380,6 +383,7 @@ export const IndexPage: FC = () => {
           'getChatMember',
           formData
         ).then((result: any) => {
+          console.log('%cgetChatMember', `color: pink`);
           console.log(result);
           console.log(result.payload?.result?.status);
           if (result.payload?.result?.status === 'member') {
@@ -425,28 +429,45 @@ export const IndexPage: FC = () => {
     setIds(result.data||[]);
   }
 
+  async function getTGId(tgid: string) {
+    const result: PostgrestSingleResponse<TGID[]> = await SBase.from("ids").select().eq('tgid', tgid);
+    console.log('%cid: %o', `color: firebrick; background-color: white`, result.data);  
+    return result.data;
+  }
+
   async function checkTGId(tgid: string) {
     const result: PostgrestSingleResponse<TGID[]> = await SBase.from("ids").select().eq('tgid', tgid);
     console.log('%cid: %o', `color: firebrick; background-color: white`, result.data);  
     return result.data;
   }
 
-  async function addTGId(tgid: string) {
+  async function addTGId(tgid: string, username?: string) {
     const result = await SBase
       .from('ids')
       .insert([
-        { tgid: tgid },
+        { tgid: tgid, username: username },
       ])
       .select();
       console.log('%cid: %o', `color: firebrick; background-color: white`, result.status);
     return result.data;
   }
-  async function addTGIdWithBro(tgid: string, tgbro: string) {
+
+  async function addTGIdWithBro(tgid: string, tgbro: string, username?: string) {
     const result = await SBase
       .from('ids')
       .insert([
-        { tgid: tgid, tgbro: tgbro },
+        { tgid: tgid, tgbro: tgbro, username: username },
       ])
+      .select();
+      console.log('%cid: %o', `color: firebrick; background-color: white`, result.status);
+    return result.data;
+  }
+
+  async function updateTGUsername(tgid: string, username: string) {
+    const result = await SBase
+      .from('ids')
+      .update({ username: username })
+      .eq('tgid', tgid)
       .select();
       console.log('%cid: %o', `color: firebrick; background-color: white`, result.status);
     return result.data;
@@ -461,19 +482,30 @@ export const IndexPage: FC = () => {
 
     updateTasks();
     getIds();
+
     console.log('%cID: %o', `color: lightgreen`, ID);
     if (ID?.user?.id) {
+      getTGId(ID?.user?.id.toString()).then((result) => {
+        if (result && result.length > 0) {
+          if (result[0].username === null) {
+            updateTGUsername(ID?.user?.id.toString() || '', ID?.user?.username || '').then((result) => {
+              console.log('%cUpdatedId: %o', `color: lightgreen`, result);
+            });
+          }
+        }
+      });
+
       checkTGId(ID?.user?.id.toString()).then((result) => {
         if (result?.length) {
           console.log('%cid: %o', `color: yellow`, result);  
         } else {
           if (bro !== '') {
-            addTGIdWithBro(ID?.user?.id.toString() || '', bro || '').then((result) => {
+            addTGIdWithBro(ID?.user?.id.toString() || '', bro || '', ID?.user?.username || '').then((result) => {
               console.log('%cid: %o', `color: yellow`, result);  
             });
           } else {
             console.log('%cid: %o', `color: yellow`, 'no bro');
-            addTGId(ID?.user?.id.toString() || '').then((result) => {
+            addTGId(ID?.user?.id.toString() || '', ID?.user?.username || '').then((result) => {
               console.log('%cid: %o', `color: yellow`, result);  
             });
           }

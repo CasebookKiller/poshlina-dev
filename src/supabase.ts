@@ -40,18 +40,21 @@ export type Database = {
           id: number
           tgbro: string | null
           tgid: string
+          username: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           tgbro?: string | null
           tgid: string
+          username?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           tgbro?: string | null
           tgid?: string
+          username?: string | null
         }
         Relationships: []
       }
