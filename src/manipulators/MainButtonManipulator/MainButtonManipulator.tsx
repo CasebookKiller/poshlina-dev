@@ -28,6 +28,7 @@ export function MainButtonManipulator() {
       mainButton.mount();
     }
     mainButton.onClick(() => {
+      //alert('oops');
       try {
         console.log('mainButton.onCLick');
         popup.open({
@@ -41,7 +42,7 @@ export function MainButtonManipulator() {
           .then((buttonId: string|null) => {
             if (buttonId === 'btnproceed') {
               const url = 'https://t.me/GosPoshlinaDevBot/poshlina';
-              shareURL(`Посмотрите мое приложение ${url}`);
+              shareURL(`Нашёл приложение ${url}`);
             } else {
               console.log(
                 buttonId === null 

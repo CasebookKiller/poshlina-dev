@@ -412,6 +412,7 @@ export const IndexPage: FC = () => {
       status: 'active',
       after: 'share',
       cb: () => {
+        //alert('ooops')
         const applink = 'https://t.me/' + import.meta.env.VITE_BOT_NAME + '/' + import.meta.env.VITE_APP_NAME + '?startapp=';
         const userid = ID?.user?.id.toString() || '';
         const bro = userid != '' ? 'bro' + userid : '';
@@ -528,7 +529,7 @@ export const IndexPage: FC = () => {
 
   function checkTask(task: AppTask) {
     console.log('%cid: %o', `color: ${TCLR}`, task.id);
-    const status = task.cb ? task.cb(): 'waiting';
+    const status = task.cb && task.after !== 'share' ? task.cb(): 'waiting';
     
     return status; //'waiting', 'success', 'error', 'checking'
   }
